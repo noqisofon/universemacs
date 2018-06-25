@@ -1,0 +1,43 @@
+#+title: Universemacs :: init
+#+language: ja
+
+~gc-cons-threshold~ はガベージコレクトが発動する上限のメモリ使用量を表します。
+デフォルトは 800000 ですが、それよりずっと多い数にします。
+
+#+begin_src emacs-lisp :tangle ../init.el
+  (setq gc-cons-threshold (* 10 10000000))
+#+end_src
+
+~universemacs-version~ は現在の Universemacs のバージョン、 ~universemacs-require-min-version~ は Universemacs が動く最小の Emacs バージョンを表します。
+
+#+begin_src emacs-lisp :tangle ../init.el
+  (defconst universemacs-version             "0.0.1" "Universemacs version")
+  (defconst universemacs-require-min-version "25.1"  "Minimal Version of Emacs")
+#+end_src
+
+最小バージョンより大きい場合は ~core/core-load-paths.el~ を読み込みます。
+
+#+begin_src emacs-lisp :tangle ../init.el
+  (if (not (version<= emacs-version universemacs-require-min-version))
+      (error (concat "Your version of Emacs (%s) is too old. "
+                     "Universemacs requires Emacs version %s or above.")
+             emacs-version
+             universemacs-require-min-version)
+    ;; else
+    (load-file (concat (file-name-directory load-file-name)
+                       "core/core-load-paths.el")))
+#+end_src
+
+~universemacs-core~ を ~require~ し、初期化したりします。
+
+#+begin_src emacs-lisp :tangle ../init.el
+  (require 'universemacs-core)
+  (universemacs/init)
+  (universemacs/configuration/sync)
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../init.el
+  (require 'server)
+  (unless (server-running-p)
+    (server-start))
+#+end_src
