@@ -1,0 +1,10 @@
+# -*- coding: utf-8; -*-
+#+title: Universemacs :: core :: core-load-paths
+
+~add-to-load-path~ は ~dir-path~ を ~load-path~ に追加します。
+
+#+begin_src emacs-lisp :tagle ../../core/core-load-paths.el
+  (defun add-to-load-path (dir-path)
+    (add-to-list 'load-path dir-path))
+#+end_src
+
