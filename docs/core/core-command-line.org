@@ -51,31 +51,20 @@
             ("--no-layer"
              (setq configuration-layer-exclude-all-layers t))
             ("--distribution"
-             )
-            )
-          )
-        )
-      )
-    )
+             (setq configuration-layer-force-distoribution (intern (nth (1+ i) args))
+                  i                                       (1+ i)))
+            ("--resume-layouts"
+             (setq universemacs-force-resume-layouts t))
+            (_
+             (setq universemacs-force-resume-layouts t))))
+        (setq i (1+ i)))
+      (nreverse new-args)))
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-command-line.el
+  (setq command-line-args (universemacs//parse-command-line command-line-args))
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-command-line.el
-#+end_src
-
-#+begin_src emacs-lisp :tangle ../../core/core-command-line.el
-#+end_src
-
-#+begin_src emacs-lisp :tangle ../../core/core-command-line.el
-#+end_src
-
-#+begin_src emacs-lisp :tangle ../../core/core-command-line.el
-#+end_src
-
-#+begin_src emacs-lisp :tangle ../../core/core-command-line.el
-#+end_src
-
-#+begin_src emacs-lisp :tangle ../../core/core-command-line.el
+  (provide 'core-command-line)
 #+end_src
