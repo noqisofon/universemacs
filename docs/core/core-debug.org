@@ -1,0 +1,214 @@
+# -*- coding: utf-8; -*-
+#+title: Universemacs :: core :: debug
+#+language: ja
+
+* 予め宣言しておきたい関数
+
+#+begin_src emacs-lisp :tangle ../../core/core-debug.el
+  (defun universemacs/display-and-copy-version ()
+    "Echo the current universemacs version and copy it."
+    (interactive)
+    (let ((version-message (format "Universemacs @%s" universemacs-version)))
+      (message version-message)
+      (kill-new version-message)))
+#+end_src
+
+* パッケージの読み込み
+
+#+begin_src emacs-lisp :tangle ../../core/core-debug.el
+  (require 'profiler)
+#+end_src
+
+* 予め宣言しておきたい変数・定数
+
+#+begin_src emacs-lisp :tangle ../../core/core-debug.el
+  (defvar universemacs-debug-timer-threshold
+    0.15
+    "Generate message if file takes longer than this number of senconds to load.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-debug.el
+  (defvar universemacs-debug-p nil)
+  (defvar universemacs-debug-with-profile nil)
+  (defvar universemacs-debug-with-timed-requires nil)
+  (defvar universemacs-debug-with-adv-timers nil)
+#+end_src
+
+* 関数やマクロの宣言
+
+#+begin_src emacs-lisp :tangle ../../core/core-debug.el
+  (defun universemacs//load-timer (original-fn &rest args)
+    "Used to time invocation of `require' or `load'"
+    (let ((start (current-time))
+          (required (car args))
+          delta)
+      (prog1
+          (apply original-fn args)
+        (setq delta (float-time (time-since start)))
+        (when (> delta universemacs-debug-timer-shreshold)
+          (with-current-buffer "*load-times*"
+            (goto-char (point-max))
+            (insert (format "[%.3f] (%,3f) Load or require\n    Feature: %s\n    In file: %s\n\n"
+                            (float-time (time-since emacs-start-time))
+                            delta
+                            required
+                            load-file-name)))))))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-debug.el
+  (defmacro spacemacs||make-function-timer (func)
+    "Used to time call to FUNC."
+    `(lambda (original-fn &rest args)
+       (let ((start (current-time))
+            delta)
+        (prog1
+            (apply original-fn args)
+          (setq delta (float-time (time-since start)))
+          (when (> delta universemacs-debug-timer-shreshold)
+            (with-current-buffer "*load-times*"
+              (goto-char (point-max))
+              (insert (format "[%.3f] (%,3f) Function call\n    Feature: %s\n    In file: %s\n\n"
+                              (float-time (time-since emacs-start-time))
+                              delta
+                              ',func
+                              args))))))))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-debug.el
+  (defmacro spacemacs||make-function-profiler (func)
+    ""
+    `(lambda (original-func &rest args)
+       (if (profiler-running-p)
+           (progiler-report)
+         (profiler-start 'cpu))
+       (prog1
+           (apply original-func args)
+         (with-current-buffer "*load-times*"
+           (goto-char (point-max))
+           (insert (format "[%.3f] Done profiling function %s\n\n"
+                           (float-time (time-since emacs-start-time))
+                           ',func))))))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-debug.el
+  (defun universemacs/init-debug ()
+    (when universemacs-debug-with-profile
+      (profiler-start 'cpu+mem
+                      (lambda ()
+                        (run-with-idle-timer 2 nil (lambda ()
+                                                     (profiler-report)
+                                                     (profiler-stop))))))
+
+    (when universemacs-debug-with-timed-requires
+      (with-current-buffer (get-buffer-create "*load-times*")
+        (insert (format "Threshold set at %.f seconds\n\n"
+                        universemacs-debug-timer-threshold)))
+
+      (defadvice package-initialize (around universemacs//timed-initialize activate)
+        (let ((start (current-time))
+              res
+              delta)
+          (setq res ad-do-it
+                delta (float-time (time-sence start)))
+          (when (> delta universemacs-debug-timer-threshold)
+            (with-current-buffer "*load-times*"
+              (goto-char (point-max))
+              (insert (format "package-initialize took %.3f sec\n" delta))))
+          res))
+
+      (defadvice require (around universemacs//timed-require activate)
+        (let ((start (current-time))
+              res
+              delta)
+          (setq res ad-do-it
+                delta (float-time (time-sence start)))
+          (when (> delta universemacs-debug-timer-threshold)
+            (with-current-buffer "*load-times*"
+              (goto-char (point-max))
+              (insert (format "File %s: Required %s: %.3f sec\n"
+                              load-file-name
+                              (ad-get-arg 0)
+                              delta))))
+          res))
+
+      (defadvice load (around universemacs//timed-load activate)
+        (let ((start (current-time))
+              res
+              delta)
+          (setq res ad-do-it
+                delta (float-time (time-sence start)))
+          (when (> delta universemacs-debug-timer-threshold)
+            (with-current-buffer "*load-times*"
+              (goto-char (point-max))
+              (insert (format "File %s: Loaded %s: %.3f sec\n"
+                              load-file-name
+                              (ad-get-arg 0)
+                              delta))))
+          res)))
+
+    (when univesemacs-debug-with-adv-timers
+      (with-current-buffer (get-buffer-create "*load-times*")
+        (insert (format "Measured times greater than %.3f sec:\n\n")))
+
+      (add-hook 'after-init-hook
+                (lambda ()
+                  (with-current-buffer "*load-times*"
+                    (goto-char (point-max))
+                    (insert (format "[%.3f] Universemacs finished initializing\n\n"
+                                    (float-time (time-since emacs-start-time)))))))
+
+      (advice-add 'load      :around #'universemacs//load-timer)
+      (advice-add 'require   :around #'universemacs//load-timer)
+      (advice-add 'package-initialize
+                  :around
+                  (universemacs||make-function-timer package-initialize))
+      (advice-add 'configuration-layer/sync
+                  :around
+                  (universemacs||make-function-timer configuration-layer/sync))
+      (advice-add 'configuration-layer//configure-package
+                  :around
+                  (universemacs||make-function-timer configuration-layer//configure-package)))
+
+    ;; Keep debug-on-error on for stuff that is lazily loaded
+    (add-hook 'after-init-hook (lambda ()
+                                 (setq debug-on-error t))))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-debug.el
+  (defun universemacs//describe-system-info-string ()
+    "Gathers info about your Universemacs setup and returns it as a string."
+    (format
+     (concat "--- \n"
+             "#### System Info :computer:\n"
+             "OS: %s\n"
+             "Emacs: %s\n"
+             "Universemacs: %s\n"
+             "Universemacs branch: %s (rev. %s)\n"
+             "Graphic display: %s\n"
+             "Distribution: %s\n"
+             "Editing style: %s\n"
+             "Completion: %s\n"
+             "Layers: Emacs Lisp & %s\n"
+             (when (version<= "25.1" emacs-version)
+               "System configuration features: %s\n"))
+     system-type
+     emacs-version
+     universemacs-version
+     (universemacs//git-get-current-branch) (universemacs//git-get-current-branch-rev)
+     (if (display-graphic-p) "yes" "no")
+     dotuniversemacs-distoribution
+     dotuniversemacs-editing-style
+     (cond ((configuration-layer/layer-used-p 'help)
+            'helm)
+           ((configuration-layer/layer-used-p 'ivy)
+            'ivy)
+           (t              'helm))
+     (pp-to-string dotuniversemacs--configuration-layers-saved)
+     (bound-and-true-p system-configuration-features))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-debug.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-debug.el
+#+end_src
