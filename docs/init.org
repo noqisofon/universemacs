@@ -25,22 +25,18 @@
              universemacs-require-min-version)
     ;; else
     (load-file (concat (file-name-directory load-file-name)
-                       "core/core-load-paths.el")))
+                       "core/core-load-paths.el"))
+
+    (require 'universemacs-core)
+    (universemacs/init)
+    (universemacs/configuration/sync)
+
+    (require 'server)
+    (unless (server-running-p)
+      (server-start)))
 #+end_src
 
 ~universemacs-core~ を ~require~ し、初期化したりします。
 
-#+begin_src emacs-lisp :tangle ../init.el
-  (require 'universemacs-core)
-  (universemacs/init)
-  (universemacs/configuration/sync)
-#+end_src
-
 Emacs の ~server~ を開始します。
 これは emacsclient を実行する際に必要です。
-
-#+begin_src emacs-lisp :tangle ../init.el
-  (require 'server)
-  (unless (server-running-p)
-    (server-start))
-#+end_src
