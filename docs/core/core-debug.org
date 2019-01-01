@@ -208,7 +208,129 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-debug.el
+  (defun universemacs/descrbe-system-info ()
+    "Gathers info about your Universemacs setup and copies to clipboad."
+    (interactive)
+    (let ((sys-info (universemacs//describe-system-info-string)))
+      (kill-new sys-info)
+      (message sys-info)
+      (message (concat "# Information has been copied to clipboard.\n"
+                       "# You can paste it in the gitter chat.\n"
+                       "# Check the *Messages* buffer if you need to review it."))))
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-debug.el
+  (defun universemacs//describe-last-keys-string ()
+    "Gathers info about your Emacs last keys and returns it as a string."
+    (loop for key across (recent-keys)
+          collect (if (or (intergerp key) (symbolp key) (listp key))
+                      (single-key-description key)
+                    (prin1-to-string key))
+          into keys
+          finnaly (return
+                   (with-temp-buffer
+                     (set-fill-column 60)
+                     (insert (mapconcat 'identity keys " "))
+                     (fill-region (point-min) (point-max))
+                     (format "#### Emacs last keys: musical_keyboard: \n```text\n%s\n```\n" (buffer-string))))))
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-debug.el
+  (defun universemacs/report-issue (arg)
+    "Open a universemacs/report-issue-mode buffer prepopulated with 
+  issue report template and system information.
+
+  With prefix arg, include the last keys pressed."
+    (interactive "P")
+    (let ((buf
+           (generate-new-buffer "REPORT_UNIVERSEMACS_ISSUE"))
+          (system-info
+           (universemacs//describe-system-info-string))
+          (backtrace
+           (if (get-buffer "*Backtrace*")
+               (with-current-buffer "*Backtrace*"
+                 (buffer-substring-no-properties
+                  (point-min)
+                  (min (point-max) 1000)))
+             "<<BACKTRACE IF RELLEVANT>>"))
+          (last-keys
+           (if (and arg
+                    (y-or-n-p (concat "Do you really want to "
+                                      "include your last pressed keys? It "
+                                      "may include some sensitive data.")))
+               (concat (unicersemacs//describe-last-keys-string) "\n")
+             "")))
+      (switch-to-buffer buf)
+      (insert-file-contents-literally
+       (concat configuration-layer-template-directory "REPORTING.template"))
+      (loop for (placeholder replatement)
+            in `(("%SYSTEM_INFO%"   ,system-info)
+                 ("%BACKTRACE%"     ,backtrace)
+                 ("(%LAST_KEYS%)\n" ,last-keys))
+            do (save-excursion
+                 (goto-char (point-min))
+                 (search-forward placeholder)
+                 (replace-match replacement [keep-case] [literal])))
+      (universemacs/report-issue-mode)))
+#+end_src
+
+* その他の宣言
+
+#+begin_src emacs-lisp :tangle ../../core/core-debug.el
+  (define-derived-mode universemacs/report-issue-mode markdown-mode "Report-Issue"
+    "Major mode for reporting issues with Universemacs.
+
+  When done editing, you can type \\[universemacs//report-issue-done] to create the
+  issue on Github or Gitlab. You must be logged in already for this to work. After you see
+  that the issue has been created successfully, you can close this buffer.
+
+  Markdown syntax is supported in this buffer.
+
+  \\{universemacs/report-issue-mode-map}"
+    (font-lock-and-keywords 'universemacs/report-issue-mode
+                            '(("\\(<<.*?\\)" . 'font-lock-comment-face))))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-debug.el
+  (define-key universemacs/report-issue-mode-map
+    (kbd "C-c C-c")
+    'universemacs//report-issue-done)
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-debug.el
+  (define-key 'universemacs/report-issue-mode-map
+    (kbd "C-c C-k")
+    'kill-buffer)
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-debug.el
+  (with-eval-after-load 'bind-map
+    (universemacs/set-leader-keys-for-major-mode
+     'universemacs/report-issue-mode
+     "," 'universemacs//report-issue-done
+     "c" 'universemacs//report-issue-done
+     "a" 'kill-buffer
+     "k" 'kill-buffer))
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-debug.el
+  (defun universemacs//report-issue-done ()
+    (interactive)
+    (let ((url ""))
+      (setq url (url-encode-url (concat url (buffer-string))))
+      ;; HACK: encode some characters according to HTML URL Encoding Reference
+      ;; via: http://www.w3schools.com/tags/ref_urlencode.asp
+      (setq url (replace-regexp-in-string "#" "%23" url))
+      (setq url (replace-regexp-in-string ";" "%3B" url))
+      (browse-url url)))
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-debug.el
+  (provide 'core-debug)
 #+end_src
