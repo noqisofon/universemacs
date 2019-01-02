@@ -150,78 +150,300 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-check-for-update
+    nil
+    "If non nil then universemacs will check for updates at startup
+  when the current branch is not `develop'. Note that checking for
+  new versions works via git commits, thus is calls GitHub or GitLab services
+  when ever you start Emacs.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-configuration-layers
+    '(emacs-lisp)
+    "List of configuration layers to load.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs--configuration-layers-saved
+    nil
+    "Saved value of `dotuniversemacs-configuration-layers' after sync.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-themes
+    '(universemacs-dark
+      universemacs-light)
+    "List of themes, the first of the list is loaded when universemacs starts.
+  Press `SPC T n' to cycle to the next theme in the list (works great
+  with 2 themes variants, one dark and one light)")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-colorize-according-to-state
+    t
+    "If non nil the cursor color matches the state color in GUI Emacs.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  ;; (defvar dotuniversemacs-leader-key
+  ;;   "SPC"
+  ;;   "The leader key.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  ;; (defvar dotuniversemacs-emacs-leader-key
+  ;;   "M-m"
+  ;;   "The leader key accessible in `emacs state' and `insert state'")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-distinguish-gui-tab 
+    nil
+    "If non nil, distinguish C-i ant tab in the GUI version of
+  emacs.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-default-font
+    '("Ricty"
+      :size 10
+      :weight normal
+      :width normal
+      :powerline-scale 1.1)
+    "Default font, or prioritized list of fonts. `powerline-scale'
+  allows to quickly tweak the mode-line size to make separators
+  look not too crappy.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  ;; (defvar dotuniversemacs-remap-Y-to-y$
+  ;;   nil
+  ;;   "If non nil `Y' is remapped to `y$' in Evil states.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-retain-visual-state-on-shift
+    t
+    "If non-nil, the shift mappings `<' and `>' retain visual state
+  if used there.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  ;; (defvar dotuniversemacs-visual-line-move-text
+  ;;   nil
+  ;;   "If non-nil, J and K move lines up and down when in visual mode.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-ex-substitute-global
+    nil
+    "If non nil, inverse the meaning of `g' in `:substitute' Evil ex-command.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-folding-method
+    'origami
+    "Code folding method. Possible values are `evil' and `origami'")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-default-layout-name
+    "Default"
+    "Name of the default layout.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-display-default-layout
+    nil
+    "If non nil the default layout name is displayed in the mode-line.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-auto-resume-layouts
+    nil
+    "If non nil then the last auto saved layouts are resume automatically upon
+  start.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-max-rollback-slots
+    5
+    "Maximum number of rollback slots to keep in the cache.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-helm-resize
+    nil
+    "If non nil, `helm' will try to minimize the space it uses.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-helm-no-header
+    nil
+    "If non nil, the helm header is hidden when there is only one source.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-helm-position
+    'bottom
+    "Position in which to show the `helm' mini-buffer.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-helm-use-fuzzy
+    'always
+    "COntrols fuzzy matching in helm. If set to `always', force fuzzy matching
+  in all non-asynchronous sources. If set to `source', preserve individual
+  source settings. Else, disable fuzzy matchin in all sources.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-large-file-size
+    1
+    "Size (in MiB) adove which universemacs will prompt to open the large file
+  literally to avoid performance issues. Opening a file literally means that
+  no major mode or minor modes are active.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-auto-save-file-location
+    'cache
+    "Location where to auto-save files. Prossible values are `original' to
+  auto-save the file in-place, `cache' to auto-save the file to another
+  file stored in the cache directory and `nil' to disable auto-saving.
+  Default value is `cache'.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  ;; (defvar dotuniversemacs-enable-paste-transient-state
+  ;;   nil
+  ;;   "If non nil the paste transient-state is enabled. While enabled pressing `p'
+  ;; several times cycle beteween the kill ring content.")
+  ;; (defvaralias
+  ;;   'dotuniverse-enable-paste-micro-state
+  ;;   'dotuniversemacs-enable-paste-transient-state
+  ;;   "Old name of `dotuniversemacs-enable-paste-transient-state'.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-which-key-delay
+    0.4
+    "Delay in seconds starting from the last keystroke after which
+  the which-key buffer will be shown if you have not complated a
+  key sequence. Setting this variable is equivalent to setting
+  `which-key-idle-delay'.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-which-key-position
+    'bottom
+    "Location of the which-key popup buffer. Possible chices are `bottom',
+  `right', and `right-then-bottom'. The last one will display on the
+  right if possible and fallback to botton if not.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-loading-progress-bar
+    t
+    "If non nil a progress bar is displayed when universemacs is loading. This
+  may increase the boot time on some systems and emacs builds, set it to nil
+  to boost the loading time.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar universemacs-fullscreen-at-startup
+    nil
+    "If non nil the frame is fullscreen when Emacs start up (Emacs 24.4+ only).")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-fullscreen-use-non-native
+    nil
+    "If non nil `universemacs/toggle-fullscreen' will not use native fullscreen. Use
+  to dissble fullscreen animations in OSX.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-maximized-at-startup
+    nil
+    "If non nil the frame is maximized when Emacs starts up (Emacs 24.4+ only).
+  Takes effect only if `dotuniversemacs-fullscreen-at-startup' is nil.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-active-transparency
+    90
+    "A value from the range (0..100), in increasing opacity, which descrives the
+  transparency level of a frame when it's active or selected. Transparency
+  can be toggled through `toggle-transparency'.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-inactive-transparency
+    90
+    "A value from the range (0..100), in increasing opacity, which descrives the
+  transparency level of a frame when it's inactive or deselected. Transparency
+  can be toggled through `toggle-transparency'.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-show-transient-state-title
+    t
+    "If non nil show the titles of transient states.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-show-transient-state-color-guide
+    t
+    "If non nil show the color guide hint for transient state keys.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-mode-line-unicode-symbols
+    t
+    "If non nil unicode symbols are displayed in the mode-line (eg. for lighters)")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-line-numbers
+    nil
+    "Control line numbers activation.
+  If set to `t' or `relative' line numbers are turned on in all `prog-mode' and
+  `text-mode' derivatives. If set ot `relative', line numbers are relative.
+  This variable can also be set to a property list for finder control:
+
+  '((:relative . nil)
+    (:disable-for-modes . (dired-mode
+                           doc-view-mode
+                           markdown-mode
+                           org-mode
+                           pdf-view-mode
+                           text-mode))
+    (:size-limit-kb . 1000))
+
+  The property `:enabled-for-modes' takes priority over `:disable-for-modes' and
+  restricts line-number to the specified list of major-mode.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-persistent-server
+    nil
+    "If non nil advised quit functions to keep server open when quitting.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-smartparents-strict-mode
+    nil
+    "If non-nil smartparens-strict-mode will be enabled in programing modes.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-smart-closing-parenthesis
+    nil
+    "If non-nil pressing the closing parentheis `)' key in insert mode presses
+  over any automatically added closing parentheis, bracket, quote, etc...
+  This can be temporary disabled by pressin `C-q' before `)'. (default nil)")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
