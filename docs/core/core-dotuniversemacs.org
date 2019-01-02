@@ -62,6 +62,91 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-elpa-https
+    t
+    "If non nil ELPA repositories are contacted via HTTPS whenever it's
+  possible. Set it to nil if you have no way to user HTTPS in your
+  environment, otherwise it is strongly recommended to let it set to t.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-elpa-timeout
+    5
+    "Maximum allowed time in seconds to contact an ELPA repository.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-elpa-subdirectory
+    nil
+    "If non-nil, a from that evaluates to a package directory. For
+  exmaple, to use different package directories for different Emacs
+  versions, set this to `emacs-version'")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-configuration-layer-path
+    '()
+    "List of additional paths where to look for configuration layers.
+  Paths must have a trailing slash (ie. `~/.mycontribs')")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-install-packages
+    'used-only
+    "Defines the behavior of Universemacs when installing packages.
+  Possible values are `used-only', `used-but-keep-unused' and `all'. `used-only'
+  installs only explicitly used package and uninstall any unused packages as well
+  as their unused dependencies. `used-but-keep-unused' installs only the used
+  packages but won't uninstall them if they become unused. `all' installs *all*
+  packages supported by Universemacs and never uninstall them.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-enable-lazy-installation
+    'unused
+    "Lazy installation of layers (i.e. layers are installed only when a file
+  with a supported type is opened). Possible values are `all', `unused' and `nil'.
+  `unused' will lazy install only unused layers (i.e. layers not listed in
+  variable `dotuniversemacs-configuration-layers'), `all' will lazy install any layer
+  that support lazy installation even the layers listed in
+  `dotuniversemacs-configuration-layers'. `nil' disable the lazy installation feature
+  and you have to explicitly list a layer in the variable
+  `dotuniversemacs-configuration-layers' to install it.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-additional-packages
+    '()
+    "List of additional packages that will be installed without being
+  wrapped in a layer. If you need some configuration for these
+  packages then consider to create a layer, you can also put the
+  configuration in `dotuniversemacs/user-config'")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-editing-style
+    'emacs
+    "One of `vim', `emacs' or `hybrid'.
+  `hybrid' is like `vim' except that `insert state' is replaced by the
+  `hybrid state' with `emacs' key bindings. The value can also be a list
+  with `:variables' keyword (similar to layers). Check the editing styles
+  section of the documentation for details on available variables.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-startup-banner
+    'official
+    "Specity the startup banner. Default value is `official', is displays
+  the official universemacs logo. An integer value is the index of text
+  banner, `random' chooses a random text banner in `core/banners'
+  directory. A string value must be a path to a .png file.
+  It the value is nil then no banner is displayed.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-scratch-mode
+    'text-mode
+    "Default major mode of the scratch buffer.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
@@ -89,4 +174,83 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (provide 'core-dotuniversemacs)
 #+end_src
