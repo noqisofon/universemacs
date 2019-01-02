@@ -1,0 +1,92 @@
+# -*- coding: utf-8; -*-
+#+title: Universemacs :: core :: dotuniversemacs
+#+language: ja
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defconst dotuniversemacs-template-directory
+    (expand-file-name (concat universemacs-core-directory "templates/"))
+    "Templates directry.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defconst dotuniversemacs-test-result-buffer
+    "*dotfile-test-results*"
+    "Name of the buffer to display dotfile test results.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (let* ((env                (getenv "UNIVERSEMACSDIR"))
+         (env-dir            (when env
+                               (expand-file-name (concat env "/"))))
+         (env-init           (and env-dir
+                                  (expand-file-name "init.el" env-dir)))
+         (no-env-dir-default (expand-file-name
+                              (concat user-home-directory ".universemacs.d/")))
+         (default-init       (expand-file-name ".universemacs" user-home-directory)))
+    (defconst dotuniversemacs-directory
+      (cond ((and env (file-exists-p env-dir))
+             env-dir)
+            ((file-exists-p no-env-dir-default)
+             no-env-dir-default)
+            (t
+             nil))
+      "Optional universemacs directory, which defaults to
+  ~/.universemacs.d. This setting can be overridden using the
+  UNIVERSEMACSDIR environment variable. If neither of these
+  directories exist, this variable will be nil.")
+
+    (defvar dotuniversemacs-filepath
+      (let ((universemacs-dir-init (when dotuniversemacs-directory
+                                     (concat dotuniversemacs-directory "init.el"))))
+        (cond (env-init)
+              ((file-exists-p default-init)
+               default-init)
+              ((and dotuniversemacs-directory
+                    (file-exists-p universemacs-dir-init))
+               universemacs-dir-init)
+              (t
+               default-init)))
+      "Filepath to the installed dotfile. If UNIVERSEMACSDIR is given 
+  then $UNIVERSEMACSDIR/init.el is used. Otherwise, if ~/.universemacs 
+  exists, then this is used. If ~/.universemacs does not exists, then
+  check for init.el in dotuniversemacs-directory and use this if it
+  exists. Otherwise, fallback to ~/.universemacs"))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-distribution
+      'univesemacs
+      "Base distribution to use. This is a layer contained in the directory
+  `+distributions'. For now available distributions are `universemacs-base'
+  or `universemacs'.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+#+end_src
