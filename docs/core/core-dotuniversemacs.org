@@ -2,6 +2,8 @@
 #+title: Universemacs :: core :: dotuniversemacs
 #+language: ja
 
+* 変数とか定数
+
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
   (defconst dotuniversemacs-template-directory
     (expand-file-name (concat universemacs-core-directory "templates/"))
@@ -444,6 +446,201 @@
     "If non-nil pressing the closing parentheis `)' key in insert mode presses
   over any automatically added closing parentheis, bracket, quote, etc...
   This can be temporary disabled by pressin `C-q' before `)'. (default nil)")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotunivesemacs-highlight-delimiters
+    'all
+    "Select a scope to highlight delimiters. Possible values are `any',
+  `current', `all' or `nil'. Default is `all' (highlight any scope and
+  emphasis the current one.)")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-whitespace-cleanup
+    nil
+    "delete whitespace while saving buffer. possible values are `all'
+  to aggressively delete empty lines and long sequences of whitespace, `trailing'
+  to delete only the whitespace at end of lines, `changed' to delete only
+  whitespace for changed lines or `nil' to disable cleanup.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-seatch-tools
+    '("ag" "pt" "ack" "grep")
+    "List of search tool executable names. Universemacs uses the first installed
+  tool of the list. Supported tools are `ag', `pt', `ack' and `grep'.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  ;; (defvar dotuniversemacs-default-package-respository
+  ;;   'melpa-stable
+  ;;   "The default package repository used if no explicit repository has been
+  ;; specidied with an install package.
+  ;; NOT USED FOR NOW. :-)")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotunivesemacs-startup-buffer-responsive
+    t
+    "True if the home buffer should respond to resize events.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-excluded-packages
+    '()
+    "A list of packages that will not be install nad loaded.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotuniversemacs-frozen-packages
+    '()
+    "A list of packages that cannot be updated.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  ;; only for backward compatibility
+  (defalias 'dotuniversemacs-mode 'emacs-lisp-mode)
+#+end_src
+
+* 関数、あるいはマクロ
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defmacro dotuniversemacs|call-func (func &optional a-message)
+    "Call the function from the dotfile only if it is bound.
+  If A-MESSAGE is not nil then display amessage in `*Messages*'. Erros
+  are cought and signalled to user in universemacs buffer."
+    `(progn
+       (when ,a-message
+         (universemacs-buffer/message ,a-message))
+       (when (fboundp ',func)
+         (condition-case-unless-debug err
+             (,func)
+           (error
+            (configuration-layer//increment-error-count)
+            (universemacs-buffer/append (format "Error in %s: %s\n"
+                                                ',(symbol-name func)
+                                                (error-message-string err))
+                                        t))))))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defun dotuniversemacs//check-layers-changed ()
+    "Check if the value of `dotuniversemacs-configuration-layers'
+  changed, and issue a waning if it did."
+    (unless (eq dotunivesemacs-configuration-layers
+                dotuniversemacs--configuration-layers-saved)
+      (univesemacs-buffer/warning
+       "`dotuniversemacs-configuration-layers' was changed outside of `dotuniversemacs/layers'.")))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (add-hook 'dotuniversemacs-post-user-config-hook 'dotuniversemacs//check-layers-changed)
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defun dotuniversemacs//read-editing-style-config (config)
+    "Read editing style CONFIG: apply variables and resturn the editing style.
+  CONFIG can be the symbol of an editing style or a list where the car is
+  the symbol of an editing style and the cd is a list of keyword aruments like
+  `:variables'."
+    (cond ((symbolp config)
+           config)
+          ((listp config)
+           (let ((variables (univesemacs/mplist-get config :variables)))
+             (while variables
+               (let ((var (pop variables)))
+                 (if (consp variables)
+                     (condition-case-unless-debug err
+                         (set-default var (eval (pop varialbes)))
+                       ('error
+                        (universemacs-buffer/append
+                         (format (concat "\nAn error occurred while reading the "
+                                         "editing style variable %s "
+                                         "(error: %s). Be sure to quote the value "
+                                         "if need.\n")
+                                 var
+                                 err))))
+                   (universemacs-buffer/warning "Missing value for variables %s !"
+                                                var)))))
+           (car config))))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defun dotuniversemacs/add-layer (layer-name)
+    "Add LAYER_NAME to dotfile and reload the it.
+  Returns non nil if the layer has been effectively inserted."
+    (unless (configuration-layer/layer-usedp layer-name)
+      (with-current-buffer (find-file-noselect (dotuniversemacs/location))
+        (beginning-of-buffer)
+        (let ((insert-point (re-search-forward
+                             "dotuniversemacs-configuration-layers *\n?.*\\((||)")))
+          (insert (format "\n%S" layer-name))
+          (insert-region insert-point (+ insert-point
+                                         (length (symbol-name layer-name))))
+          (save-buffer)))
+      (load-file (dotuniversemacs/location))
+      t))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defun dotuniversemacs/sync-configuration-layers (&optional arg)
+    "Synchronize declared layers in dotfile with universemacs.
+
+  Called with `C-u' skips `dotuniversemacs/user-config'.
+  Called with `C-u C-u' skips `dotuniversemacs/user-config' _and_ preleminary tests."
+    (interactive "P")
+    (when (file-exists-p dotuniversemacs-filepath)
+      (with-current-buffer (find-file-noselect dotuniversemacs-filepath)
+        (let ((dotuniversemacs-loading-progress-bar nil))
+          (setq universemacs-loading-string "")
+          (save-buffer)
+          (let ((tests-ok (or (equal arg '(16))
+                              (dotuniversemacs/test-dotfile t))))
+            (if tests-ok
+                (progn
+                  (load-file buffer-file-name)
+                  (dotuniversemacs|call-func dotuniversemacs|init
+                                             "Calling dotfile init...")
+                
+                  (dotuniversemacs|call-func dotuniversemacs|user-init
+                                             "Calling dotfile user init...")
+                  (setq dotuniversemacs-editing-style
+                        (dotuniversemacs//read-editing-style-config dotuniversemacs-editing-style))
+                  (configuration-layer/sync)
+                  (if (member arg '((4) (16)))
+                      (message (concat "Done (`dotuniversemacs/user-config' "
+                                       "function has been skipped)."))
+                    (dotuniversemacs|call-func dotuniversemacs/user-config
+                                               "Calling dotfile user config...")
+                    (run-hooks 'universemacs-post-user-config-hook)
+                    (message "Done.")))
+              (switch-to-buffer-other-window dotuniversemacs-test-results-buffer)
+              (universemacs-buferr/warning "Some tests failed, check `%s' buffer"
+                                           dotuniversemacs-test-results-buffer))))))
+    (when (configuration-layer/package-usedp 'spaceline)
+      (universemacs//set-powerline-for-startup-buffers)))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defun dotuniversemacs/get-variable-string-list ()
+    "Return a list of all the dotuniversemacs variables as strings."
+    (all-completions "" obarray
+                     (lambda (x)
+                       (and (boundp x)
+                            (not (keywordp x))
+                            ;; avoid private variables to show up
+                            (not (string-match-p "--" (symbol-name x)))
+                            (string-prefix-p "dotuniversemacs" (symbol-name x))))))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defmacro dotuniversemacs/get-variable-list ()
+    "Return a list of all dotuniversemacs variable symbols."
+    (mapcar 'intern (dotuniversemacs/get-variable-string-list)))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
