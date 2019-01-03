@@ -56,7 +56,7 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-debug.el
-  (defmacro spacemacs||make-function-timer (func)
+  (defmacro universemacs||make-function-timer (func)
     "Used to time call to FUNC."
     `(lambda (original-fn &rest args)
        (let ((start (current-time))
@@ -75,7 +75,7 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-debug.el
-  (defmacro spacemacs||make-function-profiler (func)
+  (defmacro universemacs||make-function-profiler (func)
     ""
     `(lambda (original-func &rest args)
        (if (profiler-running-p)
@@ -204,7 +204,7 @@
             'ivy)
            (t              'helm))
      (pp-to-string dotuniversemacs--configuration-layers-saved)
-     (bound-and-true-p system-configuration-features))
+     (bound-and-true-p system-configuration-features)))
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-debug.el
@@ -299,7 +299,7 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-debug.el
-  (define-key 'universemacs/report-issue-mode-map
+  (define-key universemacs/report-issue-mode-map
     (kbd "C-c C-k")
     'kill-buffer)
 #+end_src
