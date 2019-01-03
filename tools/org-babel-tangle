@@ -1,0 +1,14 @@
+#!/usr/bin/bash
+# -*- coding: utf-8; mode: shell-script; -*-
+# 
+# tangle files with org-mode
+#
+
+emacs -Q --batch --eval "
+(progn
+  (require 'ob-tangle)
+
+  (dolist (a-file command-line-args-left)
+    (with-current-buffer (find-file-noselect a-file)
+      (org-babel-tangle))))" \
+          "$@"
