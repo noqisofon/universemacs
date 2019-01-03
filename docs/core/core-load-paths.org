@@ -20,6 +20,7 @@
       (add-to-load-path dir-path)))
 #+end_src
 
+
 * 変数？定義
 
 ~universemacs-start-directory~ 
@@ -38,10 +39,9 @@
 
 #+begin_src emacs-lisp :tangle ../../core/core-load-paths.el
   (defvar universemacs-info-directory
-    (expand-file-name (concat universemacs-info-directory "info/"))
+    (expand-file-name (concat universemacs-core-directory "info/"))
     "Universemacs info files directory.")
 #+end_src
-
 
 
 

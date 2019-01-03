@@ -641,6 +641,9 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defmacro dotuniversemacs|symbol-value (a-symbol)
+    ""
+    )
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el

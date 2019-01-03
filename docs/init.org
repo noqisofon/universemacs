@@ -18,7 +18,7 @@
 最小バージョンより大きい場合は ~core/core-load-paths.el~ を読み込みます。
 
 #+begin_src emacs-lisp :tangle ../init.el
-  (if (not (version<= emacs-version universemacs-require-min-version))
+  (if (not (version<= universemacs-require-min-version emacs-version))
       (error (concat "Your version of Emacs (%s) is too old. "
                      "Universemacs requires Emacs version %s or above.")
              emacs-version
@@ -27,7 +27,7 @@
     (load-file (concat (file-name-directory load-file-name)
                        "core/core-load-paths.el"))
 
-    (require 'universemacs-core)
+    (require 'core-universemacs)
     (universemacs/init)
     (universemacs/configuration/sync)
 
