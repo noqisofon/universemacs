@@ -1,0 +1,205 @@
+# -*- coding: utf-8; -*-
+#+title: Universemacs :: core :: release-management
+#+language: ja
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+  (defconst universemacs-repository
+    "universemacs"
+    "Name of the Univesemacs remote repository")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+  (defconst universemacs-repository-owner
+    "noqisofon"
+    "Name of the Universmeacs remote repository owner.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+  (defconst universemacs-checkversion-remote
+    "checkversion"
+    "Name of  the remote repository used to check for new version.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+  (defconst universemacs-checkversion-branch
+    "master"
+    "Name of the branch used to check for new version.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+  (defvar doruniversmeacs-check-for-update)
+  (defvar universemacs-version)
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+  ;; new version Variables
+  (defvar universemacs-new-version
+    nil
+    "If non-nil a new Universemacs version is available.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+  ;; used to be "6 hours" but we now check for new versions only at startup
+  (defvar universemacs-version-check-interval
+    nil
+    "Time between two version checks.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+  (defvar universemacs-version-check-light
+    "[+]"
+    "Text displayed in the mode-line when a new version is available.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+  (defvar universemacs-version--check-timer
+    nil
+    "The current timer for new version check.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+  (defvar universemacs-version--last-startup-check-file
+    (expand-file-name (concat universemacs-cache-directory "last-version-check"))
+     "File where the last startup version check time is stored.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+  (defvar universemacs-version--last-startup-check-time
+    nil
+    "Time of last version check.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+  (defvar universemacs-version--startup-check-interval
+    (* 3600 24)
+    "Minimum number of seconds between two version checks at startup.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+  (defun universemacs/switch-to-verson (&optional a-version)
+    "Swtich universemacs to A-VERSION.
+
+  A-VERSION is string wich the format `x.x.x'.
+  IMPORTANT: The switch is performed by hard resetting the current branch.
+  If A-VERSION is nil the a prompt will ask for a version number.
+  If the current version is not `master' and `develop' then
+  a prompt will ask for confirmation before actually switching to then
+  specified version.
+  It is not possible to switch version when you are on `develop' branch,
+  users on `develop' branch must manually pull last commits instead."
+    (interactive)
+    (let ((branch (universemacs//git-get-current-branch))
+          (dirty  (universemacs//git-working-directory-dirty)))
+      (unless a-version
+        (message "Getting version information...")
+        (let ((last-version (universemacs/get-last-version)))
+          (setq a-version (read-string
+                           (format "Version (default %s [latest]): " last-version)
+                           nil nil last-version))))
+      (cond ((string-equal "develop" branch)
+             (message (concat "Cannot switch version because you are on "
+                              "develop.\n"
+                              "You have to manually `pull --rebase' the latest "
+                              "commits.")))
+            (dirty
+             (message (concat "Your Emacs directory is not clean.\n"
+                              "git status:\n%s")
+                      dirty))
+            ((string-equal a-version universemacs-version)
+             (message "You are already on the latest version."))
+            ((or (string-equal "master" branch)
+                 (yes-or-no-p
+                  (format (cancat "You are not on master. "
+                                  "This command will switch branches.\n"
+                                  "Are you sure that you want to swtich "
+                                  "to version %s ? ")
+                          a-version)))
+             (let ((tag (concat "v" a-version)))
+               (if (universemacs//git-hart-reset-to-tag tag)
+                   (progn
+                     (setq universemacs-version a-version)
+                     (message "Successfully switched to version %s" a-version))
+                 (message "An error occurred while switching to version %s"
+                          a-version)))
+             )
+            (:otherwise
+             (message "Update aborted.")))))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+  (defun universemacs/check-for-new-version (force &optional interval)
+    "Periodicly check for new for new Universemacs version.
+  Update `universemacs-new-version' variable if any new version has been
+  found."
+    (interactive "P")
+    (cond ((and (not force)
+                (not dotuniversemacs-check-for-update))
+           (message "Skipping check for new version (reason: dotfile)"))
+          ((and (not force)
+                (string-equal "develop" (universemacs//git-get-current-branch)))
+           (message "Skipping check for new version (reason: develop branch)"))
+          ((and (not force)
+                (not (universemacs//can-check-for-new-version-at-startup)))
+           (message (concat "Skipping check for new version "
+                            "(reason: last check is too recent)")))
+          ((require 'async nil t)
+           (message "Start checking for new version...")
+           (async-start
+            `(lambda ()
+               ,(async-inject-variables "\\`universemacs-start-directory\\'")
+               (load-file (concat universemacs-start-directory
+                                  "core/core-load-paths.el"))
+               (require 'core-universemacs)
+               (universemacs/get-last-version))
+            (lambda (result)
+              (if result
+                  (if (or (version< result universemacs-version)
+                          (string= result universemacs-version)
+                          (if universemacs-new-version
+                              (string= result universemacs-new-version)))
+                      (message "Universemacs is up to date.")
+                    (message "New version of Universemacs available: %s" result)
+                    (setq universemacs-new-version result))
+                (message "Unable to check for new version."))))
+           (when interval
+             (setq universemacs-version-checktimer
+                   (run-at-time t (timer-duration interval)
+                                'universemacs/check-for-new-version))))
+          (:otherwise
+           (message "Skipping check for new version (reason: async not loaded)"))))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+  (defun universemacs/git-get-current-branch-rev ()
+    "Returns the hash of the head commit on the current branch.
+  Returns nil if an error occurred."
+    (let ((proc-buffer "git-get-current-branch-head-hash")
+          (default-directory (file-truename universemacs-start-directory)))
+      (when (eq 0 (process-file "git" nil proc-buffer nil
+                                "rev-parse" "--short" "HEAD"))
+        (with-current-buffer proc-buffer
+          (prog1
+              (when (buffer-string)
+                (goto-char (point-min))
+                (replace-regexp-in-string
+                 "\n$" ""
+                 (buffer-substring (line-beginning-position)
+                                   (line-end-position))))
+            (kill-buffer proc-buffer))))))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+  (provide 'core-release-management)
+#+end_src

@@ -38,6 +38,12 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-load-paths.el
+  (defvar universemacs-cache-directory
+    (expand-file-name (concat universemacs-start-directory ".cache/"))
+    "Universemacs storage area for persistent files.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-load-paths.el
   (defvar universemacs-info-directory
     (expand-file-name (concat universemacs-core-directory "info/"))
     "Universemacs info files directory.")
