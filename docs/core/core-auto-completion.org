@@ -1,0 +1,12 @@
+# -*- coding: utf-8; -*-
+#+title: Universemacs :: core :: auto-completion
+#+language: ja
+
+~universemacs-default-company-backends~ は univercemacs で使用されるデフォルトの Company バックエンドのリストです。
+この変数は universemacs でモード固有の Company のバックエンドを構成するために使用されます。
+このリストのバックエンドは、これらのモードで常にアクティブであり、個々の univercemacs レイヤーによって追加されたバックエンドも同様です。
+
+#+begin_src emacs-lisp :tangle ../../core/core-auto-completion.el
+  (defvar universemacs-default-company-backends
+    '(company-dabbrev-code company-gtags company-etags company-keywords company-files company-dabbrev))
+#+end_src
