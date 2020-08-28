@@ -5,4 +5,4 @@ all: tangle
 
 .PHONY: tangle
 tangle:
-	org-babel-tangle ./*.org
+	../../tools/org-babel-tangle ./*.org

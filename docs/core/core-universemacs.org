@@ -21,7 +21,9 @@
 #+begin_src emacs-lisp :tangle ../../core/core-universemacs.el
   (require 'subr-x nil 'noerror)
   (require 'page-break-lines)
+#+end_src
 
+#+begin_src emacs-lisp :tangle ../../core/core-universemacs.el
   (require 'core-debug)
   (require 'core-command-line)
   (require 'core-dotuniversemacs)
@@ -70,6 +72,9 @@
   (defvar universemacs-post-user-config-hook
     nil
     "Hook run after `dotuniversemacs/user-config'.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-universemacs.el
   (defvar universemacs-post-user-config-hook-run
     nil
     "Whethe `universemacs-post-user-config-hook' has been run.")
