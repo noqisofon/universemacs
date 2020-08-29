@@ -1,0 +1,20 @@
+# -*- coding: utf-8; -*-
+#+title: Universemacs :: core :: jump
+#+language: ja
+
+
+* 予め宣言しておきたい変数、または定数
+
+#+begin_src emacs-lisp :tangle ../../core/core-jump.el
+  (defvar universemacs-default-jump-handlers '())
+#+end_src
+
+
+* 関数またはマクロの定義
+
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-jump.el
+  (provide 'core-jump)
+#+end_src

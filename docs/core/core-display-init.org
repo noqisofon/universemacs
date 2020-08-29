@@ -1,0 +1,40 @@
+# -*- coding: utf-8; -*-
+#+title: Universemacs :: core :: display-init
+#+language: ja
+
+* 関数またはマクロの定義
+
+~universemacs--after-display-system-init-list~ は表示システムの初期化後に実行される関数のリストです。
+
+#+begin_src emacs-lisp :tangle ../../core/core-display-init.el
+  (defvar universemacs--after-display-system-init-list '())
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-display-init.el
+  (defadvice server-create-window-system-frame (after universemacs-init-display activate)
+    (progn
+      (dolist (fn (reverse universemacs--after-display-system-init-list))
+	(funcall fn)
+	(ad-disable-advice 'server-create-window-system-frame
+			   'after
+			   'universemacs-init-display)
+	(ad-activate 'server-create-window-system-frame))))
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-display-init.el
+  (defmacro universemacs|do-after-display-system-init (&rest body)
+    `(let ((init (cond ((boundp 'ns-initialized) ns-initialized)
+		       ((boundp 'w32-initalized) (font-family-list))
+		       ((boundp 'x-initialized)  x-initialized)
+		       (t                        (display-graphic-p)))))
+       (if init
+	   (progn
+	     ,@body)
+	 (push (lambda() ,@body) universemacs--after-display-system-init-list))))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-display-init.el
+  (provide 'core-display-init)
+#+end_src

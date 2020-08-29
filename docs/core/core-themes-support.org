@@ -1,0 +1,176 @@
+# -*- coding: utf-8; -*-
+#+title: Universemacs :: core :: themes-support
+#+language: ja
+
+
+
+
+~emacs-built-in-themes~ は Emacs にビルトインされているテーマのリストです。
+
+#+begin_src emacs-lisp :tangle ../../core/core-themes-supportuniversemacs.el
+  (defconst emacs-built-in-themes
+    (cons 'default (custom-available-themes))
+    "List of emacs built-in themes")
+#+end_src
+
+~universemacs--fallback-them~ は指定されたユーザーテーマが何らかの理由で適用できなかった際に適用されるフォールバックテーマを表します。
+
+#+begin_src emacs-lisp :tangle ../../core/core-themes-supportuniversemacs.el
+  (defvar universemacs--fallback-theme
+    'universemacs-dark
+    "Fallback theme if user theme connot be applied.")
+#+end_src
+
+~universemacs--default-user-theme~ はデフォルトのユーザーテーマを表します。
+
+#+begin_src emacs-lisp :tangle ../../core/core-themes-supportuniversemacs.el
+  (defvar universemacs--default-user-theme
+    nil
+    "Interval variable stroing user theme to be installed.")
+#+end_src
+
+
+
+Universemacs ドキュメントでキーバインディングを表示するための face です。
+
+#+begin_src emacs-lisp :tangle ../../core/core-themes-supportuniversemacs.el
+  (defface org-kbd
+    '((t (:background "LemonChiffon1" :foreground "black" :box
+		      (:line-width 2 :color nil :style released-button))))
+    "Face for displaying key binding in Universemacs documents."
+    :group 'org-faces)
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-themes-supportuniversemacs.el
+  (defconst univese-theme-name-to-package
+    '(
+      (alert-black-alt                          . alect-themes)
+      (alert-black                              . alect-themes)
+      (alert-dark-alt                           . alect-themes)
+      (alert-dark                               . alect-themes)
+      (alert-light-alt                          . alect-themes)
+      (alert-light                              . alect-themes)
+
+      (ample-light                              . ample-themes)
+      (ample-flat                               . ample-themes)
+
+      (apropospriate-light                      . aproposprite-theme)
+      (apropospriate-dark                       . aproposprite-theme)
+    
+      (doom-molokai                             . doom-themes)
+      (doom-mono-dark                           . doom-themes)
+      )
+    "alist matching a theme name with its package name, required when
+  package name does not match theme name + `-theme' suffix. ")
+#+end_src
+
+~universemacs-post-theme-change-hook~ はテーマが変更された後に実行されるフックです。
+
+#+begin_src emacs-lisp :tangle ../../core/core-themes-supportuniversemacs.el
+  (defvar universemacs-post-theme-change-hook
+    nil
+    "Hook run after theme has changed.")
+#+end_src
+
+~universemacs//get-theme-package~ は指定された THEME-NAME 名のパッケージテーマを返します。
+
+#+begin_src emacs-lisp :tangle ../../core/core-themes-supportuniversemacs.el
+  (defun universemacs//get-theme-package (theme-name)
+    "Returns the package theme for the giben THEME-NAME name."
+    (cond
+     ;; built-in
+     ((memq theme-name emacs-built-in-themes) nil)
+     ;; from explicit alist
+     ((assq theme-name univesemacs-theme-name-to-package)
+      (cdr (assq theme-name universemacs-theme-name-to-package)))
+     ;; fallback to <theme-name>-theme
+     (t
+      (intern (format "%S-theme" theme-name)))))
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-themes-supportuniversemacs.el
+  (defun univesemacs/load-theme (theme &optional install)
+    "Load THEME.
+  IF INSTALL is non-nil then attempt to install the theme."
+    ;; Required dependenceies for some themes
+    (condition-case err
+	(progn
+	  (when install
+	    (universemacs-buffer/append
+	     (format "--> Installing user theme %s..."
+		     universemacs--default-user-theme))
+	    (redisplay))
+	  ;; Load theme
+	  (when (or (memq theme '(zonokai-blue
+				  zonokai-red
+				  solarized-light
+				  solarized-dark
+				  doom-one
+				  doom-molokai)))
+	    (configuration-layer/load-or-install-package 'dash install))
+	  ;; Unless Emacsstack themes
+	  (unless (or (memq theme (custom-available-themes))
+		      (eq 'default theme))
+	    (cond
+	     ;; themes with explicitly declared package names
+	     ((assq theme universemacs-theme-name-to-package)
+	      (let* ((pkg     (universemacs//get-theme-package theme))
+		     (pkg-dir (configuration-layer/load-or-install-package
+			       pkg
+			       install)))
+		(when (or (eq 'mor-light theme)
+			  (eq 'moe-dark  theme))
+		  (load-file (concat pkg-dir "moe-light-theme.el"))
+		  (load-file (concat pkg-dir "moe-dark-theme.el")))
+		(when pkg-dir
+		  (add-to-list 'custom-theme-path pkg-dir))))
+	     (t
+	      ;; other themes
+	      ;; we assume that the package name is suffixed with `-theme'
+	      ;; if not we will handle the special thems as we get issues
+	      ;; in the tracker.
+	      (let ((pkg (universemacs//get-theme-package theme)))
+		(configuration-layer/load-or-install-package pkg install)))))
+	  ;; Apply theme
+	  (mapc 'disable-theme custom-enabled-themes)
+	  ;; explicitly reload the theme for the first GUI client
+	  (eval `(univesemacs|do-after-display-system-init
+		  (load-theme ',theme t)))
+	  (unless (display-graphic-p)
+	    (load-theme theme t))
+	  (when install
+	    (univesemacs-buffer/replace-last-line
+	     (format (concat "--> User theme \"%s\" has been applied, you may"
+			     "have to restart Emacs.\n")
+		     universemacs--default-user-theme)))
+	  (redisplay))
+      ('error
+       (if install
+	   (progn
+	     (universemacs-buffer/warning
+	      (concat "An error occurred while applying "
+		      "the theme \"%s\", fallback on theme \"%s\". \n"
+		      "Error was: %s")
+	      theme
+	      univesemacs--fallback-theme
+	      err)
+	     (univesemacs-buffer/warning
+	      (concat "Please check the value of \"dotuniversemacs-themes\" in your "
+		      "dotfile or open an issue \n"
+		      "so we can add support for hte theme \"%s\".")
+	      theme)
+	     (unless (display-graphic-p)
+	       (eval `(universemacs|do-after-display-system-init
+		       (load-theme 'universemacs--fallback-theme t))))))
+       (throw 'error)))))
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-themes-supportuniversemacs.el
+  (provide 'core-themes-support)
+#+end_src
