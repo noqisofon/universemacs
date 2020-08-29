@@ -7,7 +7,7 @@
 
 ~emacs-built-in-themes~ は Emacs にビルトインされているテーマのリストです。
 
-#+begin_src emacs-lisp :tangle ../../core/core-themes-supportuniversemacs.el
+#+begin_src emacs-lisp :tangle ../../core/core-themes-support.el
   (defconst emacs-built-in-themes
     (cons 'default (custom-available-themes))
     "List of emacs built-in themes")
@@ -15,7 +15,7 @@
 
 ~universemacs--fallback-them~ は指定されたユーザーテーマが何らかの理由で適用できなかった際に適用されるフォールバックテーマを表します。
 
-#+begin_src emacs-lisp :tangle ../../core/core-themes-supportuniversemacs.el
+#+begin_src emacs-lisp :tangle ../../core/core-themes-support.el
   (defvar universemacs--fallback-theme
     'universemacs-dark
     "Fallback theme if user theme connot be applied.")
@@ -23,7 +23,7 @@
 
 ~universemacs--default-user-theme~ はデフォルトのユーザーテーマを表します。
 
-#+begin_src emacs-lisp :tangle ../../core/core-themes-supportuniversemacs.el
+#+begin_src emacs-lisp :tangle ../../core/core-themes-support.el
   (defvar universemacs--default-user-theme
     nil
     "Interval variable stroing user theme to be installed.")
@@ -33,7 +33,7 @@
 
 Universemacs ドキュメントでキーバインディングを表示するための face です。
 
-#+begin_src emacs-lisp :tangle ../../core/core-themes-supportuniversemacs.el
+#+begin_src emacs-lisp :tangle ../../core/core-themes-support.el
   (defface org-kbd
     '((t (:background "LemonChiffon1" :foreground "black" :box
 		      (:line-width 2 :color nil :style released-button))))
@@ -43,7 +43,7 @@ Universemacs ドキュメントでキーバインディングを表示するた�
 
 
 
-#+begin_src emacs-lisp :tangle ../../core/core-themes-supportuniversemacs.el
+#+begin_src emacs-lisp :tangle ../../core/core-themes-support.el
   (defconst univese-theme-name-to-package
     '(
       (alert-black-alt                          . alect-themes)
@@ -68,7 +68,7 @@ Universemacs ドキュメントでキーバインディングを表示するた�
 
 ~universemacs-post-theme-change-hook~ はテーマが変更された後に実行されるフックです。
 
-#+begin_src emacs-lisp :tangle ../../core/core-themes-supportuniversemacs.el
+#+begin_src emacs-lisp :tangle ../../core/core-themes-support.el
   (defvar universemacs-post-theme-change-hook
     nil
     "Hook run after theme has changed.")
@@ -76,7 +76,7 @@ Universemacs ドキュメントでキーバインディングを表示するた�
 
 ~universemacs//get-theme-package~ は指定された THEME-NAME 名のパッケージテーマを返します。
 
-#+begin_src emacs-lisp :tangle ../../core/core-themes-supportuniversemacs.el
+#+begin_src emacs-lisp :tangle ../../core/core-themes-support.el
   (defun universemacs//get-theme-package (theme-name)
     "Returns the package theme for the giben THEME-NAME name."
     (cond
@@ -92,7 +92,7 @@ Universemacs ドキュメントでキーバインディングを表示するた�
 
 
 
-#+begin_src emacs-lisp :tangle ../../core/core-themes-supportuniversemacs.el
+#+begin_src emacs-lisp :tangle ../../core/core-themes-support.el
   (defun univesemacs/load-theme (theme &optional install)
     "Load THEME.
   IF INSTALL is non-nil then attempt to install the theme."
@@ -166,11 +166,11 @@ Universemacs ドキュメントでキーバインディングを表示するた�
 	     (unless (display-graphic-p)
 	       (eval `(universemacs|do-after-display-system-init
 		       (load-theme 'universemacs--fallback-theme t))))))
-       (throw 'error)))))
+       (throw 'error))))
 #+end_src
 
 
 
-#+begin_src emacs-lisp :tangle ../../core/core-themes-supportuniversemacs.el
+#+begin_src emacs-lisp :tangle ../../core/core-themes-support.el
   (provide 'core-themes-support)
 #+end_src
