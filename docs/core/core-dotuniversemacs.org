@@ -21,7 +21,7 @@
 #+end_src
 
 ~dotuniversemacs-directory~ はオプションの universemacs ディレクトリへのパスを表します。
-デフォルトは ~~/.universemacs.d~ です。
+デフォルトは =~/.universemacs.d= です。
 この設定は ~UNIVERSEMACSDIR~ 環境変数を使用して上書きできます。
 これらのディレクトリがどちらも存在しない場合、この変数の値は ~nil~ になります。
 
@@ -49,9 +49,9 @@
 
 ~dotuniversemacs-filepath~ はインストールされた dotfile へのファイルパスを表します。
 ~UNIVERSEMACS~ が指定されている場合、 ~$UNIVERSEMACS/init.el~ が使用されます。
-それ以外の場合、 ~~/.universemacs~ が存在するとこれが使用されます。
-~~/.universemacs~ が存在しない場合は ~dotuniversemacs-directory~ で ~init.el~ を確認し、存在する場合はこれを使用します。
-それ以外の場合は ~~/.universemacs~ にフォールバックされます。
+それ以外の場合、 =~/.universemacs= が存在するとこれが使用されます。
+=~/.universemacs= が存在しない場合は ~dotuniversemacs-directory~ で ~init.el~ を確認し、存在する場合はこれを使用します。
+それ以外の場合は =~/.universemacs= にフォールバックされます。
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
     (defvar dotuniversemacs-filepath
