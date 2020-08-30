@@ -96,11 +96,16 @@
   environment, otherwise it is strongly recommended to let it set to t.")
 #+end_src
 
+~dotuniversemacs-elpa-timeout~ は ELPA リポジトリーに接続するための最大許容時間(秒)です。
+
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
   (defvar dotuniversemacs-elpa-timeout
     5
     "Maximum allowed time in seconds to contact an ELPA repository.")
 #+end_src
+
+~dotuniversemacs-elpa-subdirectory~ が非 ~nil~ の場合、それはパッケージディレクトリとして評価されます。
+例えば、異なる Emacs バージョンに異なるパッケージディレクトリを使用するにはこれを ~emacs-version~ に設定します。
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
   (defvar dotuniversemacs-elpa-subdirectory
@@ -110,12 +115,21 @@
   versions, set this to `emacs-version'")
 #+end_src
 
+~dotuniversemacs-configuration-layer-path~ は構成レイヤーを探す追加のパスのリストです。
+パスには末尾にスラッシュが必要です。(例: =~/.mycontribs/= )
+
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
   (defvar dotuniversemacs-configuration-layer-path
     '()
     "List of additional paths where to look for configuration layers.
   Paths must have a trailing slash (ie. `~/.mycontribs')")
 #+end_src
+
+~dotuniversemacs-install-packages~ はパッケージをインストールするときの Universemacs の動作を定義します。
+使用できる値は ~used-only~ (使用済みのみ)、 ~used-but-keep-unused~ (使用済みだがキープなし)、 ~all~ (すべて)です。
+~used-only~ は明示的に使用されたパッケージのみをインストールし、未使用のパッケージと未使用の依存関係をアンインストールします。
+~used-but-keep-unused~ は使用済みのパッケージのみをインストールしますが使用されなくなった場合はアンインストールしません。
+~all~ は Univesemacs でサポートされている*すべての*パッケージをインストールし、アンインストールしません。
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
   (defvar dotuniversemacs-install-packages
