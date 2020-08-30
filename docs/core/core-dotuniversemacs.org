@@ -4,17 +4,26 @@
 
 * 変数とか定数
 
+~dotuniversemacs-template-directory~ はテンプレートディレクトリへのパスを表します。
+
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
   (defconst dotuniversemacs-template-directory
     (expand-file-name (concat universemacs-core-directory "templates/"))
     "Templates directry.")
 #+end_src
 
+~dotuniversemacs-test-result-buffer~ は dotfile テスト結果を表示するバッファの名前を表します。
+
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
   (defconst dotuniversemacs-test-result-buffer
     "*dotfile-test-results*"
     "Name of the buffer to display dotfile test results.")
 #+end_src
+
+~dotuniversemacs-directory~ はオプションの universemacs ディレクトリへのパスを表します。
+デフォルトは ~~/.universemacs.d~ です。
+この設定は ~UNIVERSEMACSDIR~ 環境変数を使用して上書きできます。
+これらのディレクトリがどちらも存在しない場合、この変数の値は ~nil~ になります。
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
   (let* ((env                (getenv "UNIVERSEMACSDIR"))
@@ -38,6 +47,12 @@
   directories exist, this variable will be nil.")
 #+end_src
 
+~dotuniversemacs-filepath~ はインストールされた dotfile へのファイルパスを表します。
+~UNIVERSEMACS~ が指定されている場合、 ~$UNIVERSEMACS/init.el~ が使用されます。
+それ以外の場合、 ~~/.universemacs~ が存在するとこれが使用されます。
+~~/.universemacs~ が存在しない場合は ~dotuniversemacs-directory~ で ~init.el~ を確認し、存在する場合はこれを使用します。
+それ以外の場合は ~~/.universemacs~ にフォールバックされます。
+
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
     (defvar dotuniversemacs-filepath
       (let ((universemacs-dir-init (when dotuniversemacs-directory
@@ -57,13 +72,21 @@
   exists. Otherwise, fallback to ~/.universemacs"))
 #+end_src
 
+~dotuniversemacs-distribution~ は使用するベース・ディストリビューションを表します。
+これはディレクトリ ~+distoributions~ に含まれるレイヤーです。
+現在使用可能なディストリビューションは ~universemacs-base~ または ~universemacs~ です。
+
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
   (defvar dotuniversemacs-distribution
-      'univesemacs
+      'universemacs
       "Base distribution to use. This is a layer contained in the directory
   `+distributions'. For now available distributions are `universemacs-base'
   or `universemacs'.")
 #+end_src
+
+~dotuniversemacs-elpa-https~ が ~nil~ 以外の場合、 ELPA リポジトリには可能な限り HTTPS を介して接続されます。
+お使いの環境で HTTPS を使用する方法がない場合は ~nil~ に設定してください。
+それ以外の場合は ~t~ に設定することを強くおすすめします。
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
   (defvar dotuniversemacs-elpa-https
