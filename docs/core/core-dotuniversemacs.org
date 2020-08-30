@@ -36,7 +36,9 @@
   ~/.universemacs.d. This setting can be overridden using the
   UNIVERSEMACSDIR environment variable. If neither of these
   directories exist, this variable will be nil.")
+#+end_src
 
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
     (defvar dotuniversemacs-filepath
       (let ((universemacs-dir-init (when dotuniversemacs-directory
                                      (concat dotuniversemacs-directory "init.el"))))
