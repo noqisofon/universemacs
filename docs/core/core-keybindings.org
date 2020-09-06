@@ -38,7 +38,7 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-keybindings.el
-  (define-key key-translation-map [?\C-i] 'universemacs/translate-C-i)
+  ;; (define-key key-translation-map [?\C-i] 'universemacs/translate-C-i)
 #+end_src
 
 

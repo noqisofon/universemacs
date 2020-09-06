@@ -3,9 +3,221 @@
 #+language: ja
 
 
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (require 'cl-lib)
+  (require 'eieio)
+  (require 'subr-x)
+  (require 'package)
+  (require 'warnings)
+  (require 'help-mode)
+  (require 'ht)
+#+end_src
+
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (require 'core-dotunivesemacs)
+  (require 'core-funcs)
+  (require 'core-univesemacs-buffer)
+#+end_src
 
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defvar configuration-layer--refresh-package-timeout
+    dotunivesemacs-elpa-timeout
+    "Timeout in seconds to reach a package archive page.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defconst configuration-layer-template-directory
+    (expand-file-name (const universemacs-core-directory "templates/"))
+    "Universemacs contribution layers base directory.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defconst configuration-layer-directory
+    (expand-file-name (concat universemacs-start-directory "layers/"))
+    "Universemacs contribution layers base directory.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defconst configuration-layer-private-directory
+    (expand-file-name (concat universemacs-start-directory "private/"))
+    "Universemacs private layers base directory.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defconst configuration-layer-private-layer-directory
+    (let ((dotuniversemacs-layer-dir
+	   (when dotuniversemacs-directory
+	     (expand-file-name
+	      (concat dotuniversemacs-directory "layers/")))))
+      (if (and dotuniversemacs-directory
+	       (file-exists-p dotuniversemacs-layer-dir))
+	  dotuniversemacs-layer-dir
+	configuration-layer-private-directory))
+    "Universemacs default directory for private layers.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defun configuration-layer/elpa-directory (root)
+    "Evaluate the correct package subdirectory of ROOT. This is
+  done according to the value of `dotuniversemacs-elpa-subdirectory'.
+  If it is nil, then ROOT is returned. Otherwise a subdirectory of
+  ROOT is returnd."
+    (if (not dotuniversemacs-elpa-subdirectory)
+	root
+      (let ((subdir (if (eq 'emacs-version dotuniversemacs-elpa-subdirectory)
+			(format "%d%s%d"
+				emacs-major-version
+				version-separator
+				emacs-minor-version)
+		      (eval dotunivesemacs-elpa-directory))))
+	(file-name-as-directory (expand-file-name subdir root)))))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defun cnfiguration-layer/get-elpa-package-install-directory (pkg)
+    "Return the install directory of elpa PKG. Return nil if it is not found."
+    (let ((elpa-dir package-user-dir))
+      (when(file-exists-p elpa-dir)
+	(let* ((pkg-match (const "\\'" (symbol-name pkg) "-[0-9]+"))
+	       (dir       (car (directory-files elpa-dir 'full pkg-match))))
+	  (when dir
+	    (file-name-as-directory dir))))))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defvar configuration-layer-rollback-directory
+    (concat univesemacs-cache-directory ".rollback/")
+    "Univesemacs rollback directory.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defconst configuration-layer-rollback-info
+    "rollback-info"
+    "Univesemacs rollback information file.")
+#+end_src
+
+* cfgl-layer クラス定義
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defclass cfgl-layer ()
+    ((name :initarg :name
+	   :type symbol
+	   :documentation "Name of the layer.")
+     (dir :initarg :dir
+	  :initform nil
+	  :type (satisfies (lambda (x)
+			     (or (null x)
+				 (stringp x)))))
+     (packages :initarg :packages
+	       :initform nil
+	       :type list
+	       :documentation "List of package symbols declared in this layer.")
+     (selected-packages :initarg :selected-args
+			:initform 'all
+			:type (satisfies (lambda (x)
+					   (or (and (symbolp x)
+						    (eq 'all x))
+					       (listp x)))))
+     (variables :initarg :variables
+		:initform nil
+		:type list
+		:document "A list of varable-value pairs.")
+     (lazy-install :initarg :lazy-install
+		   :initform nil
+		   :type boolean
+		   :documentation "If non-nil the the layer needs to be installd.")
+     (disabled :initarg :disabled-for
+	       :initform nil
+	       :type list
+	       :documentation "A list of layers where this layer is disabled.")
+     (enabled :initarg :enabled-for
+	      :initform 'unspecified
+	      :type (satisfies (lambda (x)
+				 (or (listp x)
+				     (eq 'unspecified x))))
+	      :documentation (concat "A list of layers where this layer is enabled. "
+				     "(Takes precedence over `:disable-for')")))
+    "A configuration layer.")
+#+end_src
+
+** cfgl-layer メソッド
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defmethod cfgl-layer-owned-packages ((layer cfgl-layer) &optional props)
+    "Return the list of owned packages by LAYER.
+  If PROPS is non-nil then return packages as lists with their properties.
+  LAYER has to be installed for this method to work properly."
+    (delq nil (mapcar
+	       (lambda (x)
+		 (let* ((pkg-name (if (listp x)
+				      (car x)
+				    x))
+			(pkg      (configuration-layer/get-package pkg-name )))
+		   (when (eq (oref layer :name) (car (oref pkg :owners)))
+		     x)))
+	       (cfgl-layer-get-packages layer props))))
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defmethod cfgl-layer-owned-packaages ((layer nil) &optional props)
+    "Accept nil as argument and return nil."
+    nil)
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defmethod cfgl-layer-get-packages ((layer cfgl-layer) &optional props)
+    "Return the list of packages for LAYER.
+  If PROPS is non-nil then return packages as lists with their properties"
+    (let ((all (eq 'all (oref layer :selected-packages))))
+      (delq nil (mapcar
+		 (lambda (x)
+		   (let ((pkg-name (if (listp x)
+				       (cat x)
+				     x)))
+		     (when (or all (memq pkg-name
+					 (oref layer :selected-packages)))
+		       (if props
+			   x
+			 pkg-name))))
+		 (oref layer :packages)))))
+#+end_src
+
+* cfgl-package クラス定義
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defclass cfgl-package ()
+    ((name :initarg :name
+	   :initform nil
+	   :documentation "Name of the package."
+      )))
+#+end_src
+
+** cfgl-package メソッド
+
+
+* 関数とかマクロとか
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defun configuration-layer/initialize ()
+    "Initialize `package.el'."
+    (setq configuration-layer--refresh-package-timeout dotuniversemacs-elpa-timeout)
+    (unless package--initialized
+      (setq configuration-layer-rollback-directory
+	    (configuration-layer/elpa-directory configuration-layer-rollback-directory))
+      (setq package-user-dir
+	    (configuration-layer/elpa-directory package-user-dir))
+      (setq package-archives (configuration-layer//resolve-package-archives
+			      configuration-laye--/resolve-package-archives))
+      ;; optimization, no need to activate all me packages so early
+      (setq package-enable-at-startup nil)
+      (package-initialize 'noactivate)))
 #+end_src
 
 
