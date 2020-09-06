@@ -142,6 +142,8 @@
   packages supported by Universemacs and never uninstall them.")
 #+end_src
 
+~dotuniversemacs-enable-lazy-installation~ 
+
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
   (defvar dotuniversemacs-enable-lazy-installation
     'unused
@@ -707,6 +709,19 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defun dotuniversemacs/location ()
+    "Return the absolute path to the universemacs dotfile."
+    dotuniversemacs-filepath)
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defun dotuniversemacs/load-file ()
+    "load ~/.universemacs if it exists."
+    (let ((dotuniversemacs (dotuniversemacs/location)))
+      (if (file-exists-p dotuniversemacs)
+	  (unless (with-demoted-errors "Error loading .universemacs: %S"
+		    (load dotuniversemacs))
+	    (dotuniversemacs/safe-load)))))
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
