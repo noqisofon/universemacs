@@ -1,0 +1,32 @@
+# -*- coding: utf-8; -*-
+#+title: Universemacs :: core :: universemacs-buffer
+#+language: ja
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-universemacs-buffer.el
+  (defconst universemacs-buffer-version-info
+    "0.0.1"
+    "Current version used to display addition release information.")
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-universemacs-buffer.el
+  (defconst universemacs-buffer-name
+    "*universemacs*"
+    "The name of the univesemacs buffer.")
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-universemacs-buffer.el
+  (defun universemacs-buffer/message (message-or-format &rest args)
+    "Display MESSAGE-OR=FORMAT in *Messages* prepended with '(Univesemacs)'.
+  The message is displayed only if `init-file-debug' is non nil.
+  ARGS: format string argumets.'"
+    (when init-file-debug
+      (message "(Univesemacs) %s" (apply 'format message-or-format args))))
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-universemacs-buffer.el
+  (provide 'core-universemacs-buffer)
+#+end_src

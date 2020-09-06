@@ -1,0 +1,15 @@
+# -*- coding: utf-8; -*-
+#+title: Universemacs :: core :: configuration-layer
+#+language: ja
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (provide 'core-configuration-layer)
+#+end_src

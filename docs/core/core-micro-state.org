@@ -1,0 +1,9 @@
+# -*- coding: utf-8; -*-
+#+title: Universemacs :: core :: micro-state
+#+language: ja
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-micro-state.el
+  (provide 'core-micro-state)
+#+end_src

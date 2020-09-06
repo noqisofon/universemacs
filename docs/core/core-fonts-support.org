@@ -1,0 +1,16 @@
+# -*- coding: utf-8; -*-
+#+title: Universemacs :: core :: font-support
+#+language: ja
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-fonts-support.el
+  (require 'core-funcs)
+  (require 'core-universemacs-buffer)
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-fonts-support.el
+  (provide 'core-fonts-support)
+#+end_src
