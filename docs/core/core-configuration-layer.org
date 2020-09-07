@@ -15,21 +15,21 @@
 
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
-  (require 'core-dotunivesemacs)
+  (require 'core-dotuniversemacs)
   (require 'core-funcs)
-  (require 'core-univesemacs-buffer)
+  (require 'core-universemacs-buffer)
 #+end_src
 
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
   (defvar configuration-layer--refresh-package-timeout
-    dotunivesemacs-elpa-timeout
+    dotuniversemacs-elpa-timeout
     "Timeout in seconds to reach a package archive page.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
   (defconst configuration-layer-template-directory
-    (expand-file-name (const universemacs-core-directory "templates/"))
+    (expand-file-name (concat universemacs-core-directory "templates/"))
     "Universemacs contribution layers base directory.")
 #+end_src
 
@@ -71,7 +71,7 @@
 				emacs-major-version
 				version-separator
 				emacs-minor-version)
-		      (eval dotunivesemacs-elpa-directory))))
+		      (eval dotuniversemacs-elpa-directory))))
 	(file-name-as-directory (expand-file-name subdir root)))))
 #+end_src
 
@@ -80,7 +80,7 @@
     "Return the install directory of elpa PKG. Return nil if it is not found."
     (let ((elpa-dir package-user-dir))
       (when(file-exists-p elpa-dir)
-	(let* ((pkg-match (const "\\'" (symbol-name pkg) "-[0-9]+"))
+	(let* ((pkg-match (concat "\\'" (symbol-name pkg) "-[0-9]+"))
 	       (dir       (car (directory-files elpa-dir 'full pkg-match))))
 	  (when dir
 	    (file-name-as-directory dir))))))
@@ -88,14 +88,14 @@
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
   (defvar configuration-layer-rollback-directory
-    (concat univesemacs-cache-directory ".rollback/")
-    "Univesemacs rollback directory.")
+    (concat universemacs-cache-directory ".rollback/")
+    "Universemacs rollback directory.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
   (defconst configuration-layer-rollback-info
     "rollback-info"
-    "Univesemacs rollback information file.")
+    "Universemacs rollback information file.")
 #+end_src
 
 * cfgl-layer クラス定義
@@ -202,6 +202,16 @@
 ** cfgl-package メソッド
 
 
+* さらなる変数
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defvar configuration-layer--elpa-archives
+    '(("melpa" . "melpa.org/packages/")
+      ("org"   . "orgmode.org/elpa/")
+      ("gnu"   . "elpa.gnu.org/packages/"))
+    "List of ELPA archives reruired by Universemacs.")
+#+end_src
+
 * 関数とかマクロとか
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
@@ -214,10 +224,61 @@
       (setq package-user-dir
 	    (configuration-layer/elpa-directory package-user-dir))
       (setq package-archives (configuration-layer//resolve-package-archives
-			      configuration-laye--/resolve-package-archives))
+			      configuration-layer--elpa-archives))
       ;; optimization, no need to activate all me packages so early
       (setq package-enable-at-startup nil)
       (package-initialize 'noactivate)))
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defun configuration-layer//package-archive-absolute-path-p (archive)
+    "Return t if ARCHIVE has an absolute path defined."
+    (let ((path (cdr archive)))
+      (or (string-match-p "http" path)
+	  (string-prefix-p "~" path)
+	  (string-prefix-p "/" path))))
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defun configuration-layer//package-archive-local-path-p (archive)
+    "Return t if ARCHIVE has a local path."
+    (let ((path (cdr archive)))
+      (or (string-prefix-p "~" path)
+	  (string-prefix-p "/" path)
+	  (string-prefix-p "\." path))))
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defun configuration-layer//resolve-package-archives (archives)
+    "Resolve HTTP handlers for each archive in ARCHIVES and return a list
+  of all reacheable ones.
+  If the address of an archive already contains the protocol then this address is
+  left untoched.
+  The returned list has a `package-archives' compliant format."
+    (mapcar
+     (lambda (x)
+       (let ((archive-name (car x))
+	     (archive-path (cdr x)))
+	 (cons archive-name
+	       (if (configuration-layer//package-archive-absolute-path-p x)
+		   archive-path
+		 (concat (if (and dotuniversemacs-elpa-https
+				  (not universemacs-insecure))
+			     "https://"
+			   "http://")
+			 archive-path)))))
+     archives))
 #+end_src
 
 

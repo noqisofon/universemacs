@@ -107,14 +107,14 @@
 
     (configuration-layer/initialize)
     ;; Apply theme
-    (let ((default-theme (car dotunivesemacs-themes)))
+    (let ((default-theme (car dotuniversemacs-themes)))
       (condition-case err
           (universemacs/load-theme default-theme nil)
         ('error
-         ;; fallback on Univesemacs default theme
+         ;; fallback on Universemacs default theme
          (setq universemacs--default-user-theme default-theme)
          (setq dotuniversemacs-themes (delq universemacs--fallback-theme
-                                            dotunivesemacs-themes))
+                                            dotuniversemacs-themes))
          (add-to-list 'dotuniversemacs-themes universemacs--fallback-theme)
          (setq default-theme universemacs--fallback-theme)
          (load-theme universemacs--fallback-theme t)))
@@ -124,7 +124,7 @@
                                dotuniversemacs-themes))
              configuration-layer--protected-packages))
       (setq-default universemacs--current-theme default-theme)
-      (setq-default universemacs--cycle-themes (cdr dotunivesemacs-themes)))
+      (setq-default universemacs--cycle-themes (cdr dotuniversemacs-themes)))
 
     ;; font
     (universemacs|do-after-display-system-init
@@ -137,7 +137,7 @@
      ;; Counter = 1
      (message "Setting the font...")
      (unless (universemacs/set-default-font dotuniversemacs-default-font)
-       (univesemacs-buffer/warning
+       (universemacs-buffer/warning
         "Cannot find any of the specified fonts (%s)! Font setting may not be correct."
         (if (listp (car dotuniversemacs-default-font))
             (mapconcat 'car dotuniversemacs-default-font ", ")
