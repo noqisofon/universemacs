@@ -17,7 +17,8 @@
 
 #+begin_src emacs-lisp :tangle ../../core/core-themes-support.el
   (defvar universemacs--fallback-theme
-    'universemacs-dark
+    ;;  'universemacs-dark
+    'dichromacy
     "Fallback theme if user theme connot be applied.")
 #+end_src
 
@@ -44,7 +45,7 @@ Universemacs ドキュメントでキーバインディングを表示するた�
 
 
 #+begin_src emacs-lisp :tangle ../../core/core-themes-support.el
-  (defconst univese-theme-name-to-package
+  (defconst universemacs-theme-name-to-package
     '(
       (alert-black-alt                          . alect-themes)
       (alert-black                              . alect-themes)
@@ -58,7 +59,7 @@ Universemacs ドキュメントでキーバインディングを表示するた�
 
       (apropospriate-light                      . aproposprite-theme)
       (apropospriate-dark                       . aproposprite-theme)
-    
+
       (doom-molokai                             . doom-themes)
       (doom-mono-dark                           . doom-themes)
       )
@@ -83,7 +84,7 @@ Universemacs ドキュメントでキーバインディングを表示するた�
      ;; built-in
      ((memq theme-name emacs-built-in-themes) nil)
      ;; from explicit alist
-     ((assq theme-name univesemacs-theme-name-to-package)
+     ((assq theme-name universemacs-theme-name-to-package)
       (cdr (assq theme-name universemacs-theme-name-to-package)))
      ;; fallback to <theme-name>-theme
      (t

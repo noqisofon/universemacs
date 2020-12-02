@@ -10,6 +10,12 @@
   (setq message-log-max 16384)
 #+end_src
 
+#+begin_src emacs-lisp :tangle ../../core/core-universemacs.el
+  (defvar dotuniversemacs-startup-buffer-responsive
+    t
+    "True if the home buffer should respond to resize events.")
+#+end_src
+
 ** 予め宣言しておきたい定数
 
 #+begin_src emacs-lisp :tangle ../../core/core-universemacs.el

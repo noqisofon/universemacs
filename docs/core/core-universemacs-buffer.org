@@ -18,12 +18,94 @@
 
 
 #+begin_src emacs-lisp :tangle ../../core/core-universemacs-buffer.el
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-universemacs-buffer.el
+  (defun universemacs-buffer/set-mode-line (format)
+    "Set mode-line format for universemacs buffer.
+  FORMAT: the `mode-line-format' variable Emacs will use to build the mode-line."
+    (with-current-buffer (get-buffer universemacs-buffer-name)
+      (setq mode-line-format format)))
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-universemacs-buffer.el
   (defun universemacs-buffer/message (message-or-format &rest args)
     "Display MESSAGE-OR=FORMAT in *Messages* prepended with '(Univesemacs)'.
   The message is displayed only if `init-file-debug' is non nil.
   ARGS: format string argumets.'"
     (when init-file-debug
       (message "(Univesemacs) %s" (apply 'format message-or-format args))))
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-universemacs-buffer.el
+  (defvar universemacs-buffer--warnings
+    nil
+    "List of warnings during startup.")
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-universemacs-buffer.el
+  (defun universemacs-buffer/warning (message-or-format &rest args)
+    "Display MESSAGE-OR-FORMAT as a warning message but in buffer `*Messages*'.
+  ARGS: format string arguments."
+    (let ((completed-message (apply 'format message-or-format args)))
+      (message "(Universemacs) Warning: %s" completed-message)
+      (when message-log-max
+	(add-to-list 'universemacs-buffer--warnings completed-message 'append))))
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-universemacs-buffer.el
+  (defvar universemacs-buffer--last-width
+    nil
+    "Previous width of universemacs-buffer")
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-universemacs-buffer.el
+  (defun universemacs-buffer/goto-buffer (&optional refresh)
+    "Create the special buffer `universemacs-buffer-mode' and switch to it.
+  REFRESH if the buffer should be redrawn."
+    (interactive)
+    (let ((buffer-exists (buffer-live-p (get-buffer universemacs-buffer-name)))
+	  (save-line nil))
+      (when (not buffer-exists)
+	(setq universemacs-buffer--note-widgets nil))
+      (when (or (not (eq universemacs-buffer--last-width (window-width)))
+		(not buffer-exists)
+		refresh)
+	(setq universemacs-buffer--window-width (if dotuniversemacs-startup-buffer-responsive
+						    (window-width)
+						  80)
+	      universemacs-buffer--last-width universemacs-buffer--window-width)
+	(with-current-buffer (get-buffer-create universemacs-buffer-name)
+	  (page-break-lines-mode)
+	  (save-excursion
+	    (when (> (buffer-size) 0)
+	      (set 'save-line (line-number-at-pos))
+	      (let ((inhibit-read-only t))
+		(erase-buffer)))
+	    (universemacs-buffer/set-mode-line "")
+	    (universemacs-buffer/insert-banner-and-buttons)
+	    (when (bound-and-true-p universemacs-initialized)
+	      (universemacs-buffer//notes-redisplay-current-note)
+	      (configuration-layer/display-summary emacs-start-time)
+	      (when dotuniversemacs-startup-lists
+		(universemacs-buffer/insert-startup-lists))
+	      (universemacs-buffer//insert-footer)
+	      (universemacs-buffer/set-mode-line universemacs--default-mode-line)
+	      (force-mode-line-update)
+	      (universemacs-buffer-mode))))
+	(if save-line
+	    (progn (goto-char (point-min))
+		   (forward-line (1- save-line))
+		   (forward-to-indentation 0))
+	  (universemacs-buffer/goto-link-line))
+	(switch-to-buffer universemacs-buffer-name)
+	(universemacs//redisplay))))
 #+end_src
 
 

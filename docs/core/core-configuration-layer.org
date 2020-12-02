@@ -45,6 +45,13 @@
     "Universemacs private layers base directory.")
 #+end_src
 
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defvar configuration-layer--protected-packages
+    nil
+    "A list of packages that will be protected from removal as oroahns.")
+#+end_src
+
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
   (defconst configuration-layer-private-layer-directory
     (let ((dotuniversemacs-layer-dir
