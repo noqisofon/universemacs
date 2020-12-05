@@ -240,6 +240,24 @@
 
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defun configuration-layer/load-or-install-package (pkg &optional install log file-to-load)
+    "Load PKG package. PKG will be installed if it is not already installed.
+  Whenever the initial require fails the absolute path to the package
+  directory is returned.
+  If INSTALL is non-nil then try to install the package if needed.
+  If LOG is non-nil a message is displayed in universemacs-buffer-mode buffer.
+  FILE-TO-LOAD is an explicit file to load after the installation."
+    (let ((warning-minimum-level :error))
+      (unless (require pkg nil 'noerror)
+	;; not installed, we try to initialize package.el only if required to
+	;; precious seoncds during boot time
+	(require 'cl)
+
+	(let ((pkg-elpa-dir (configure-layer/get-package-install-directory pkg)))
+	    )
+	)
+      )
+    )
 #+end_src
 
 

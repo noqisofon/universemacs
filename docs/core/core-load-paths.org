@@ -21,7 +21,9 @@
 #+end_src
 
 
-* 変数？定義
+* 変数と定数定義
+
+** paths
 
 ~universemacs-start-directory~ 
 
@@ -51,14 +53,40 @@
 
 
 
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-load-paths.el
+  (defvar universemacs-banner-directory
+    (expand-file-name (concat universemacs-core-directory "banners/"))
+    "")
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-load-paths.el
+  (defconst universemacs-banner-official-png
+    (expand-file-name (concat universemacs-banner-directory "img/universemacs.png"))
+    "Universemacs official banner image.")
+#+end_src
+
 #+begin_src emacs-lisp :tangle ../../core/core-load-paths.el
   (defconst user-home-directory
     (expand-file-name "~/")
     "User home directory (~/).")
 #+end_src
 
+#+begin_src emacs-lisp :tangle ../../core/core-load-paths.el
+  (defconst pcache-directory
+    (concat universemacs-cache-directory "pcache/"))
+#+end_src
+
 
 * その他の処理
+
+#+begin_src emacs-lisp :tangle ../../core/core-load-paths.el
+  (unless (file-exists-p universemacs-cache-directory)
+    (make-directory universemacs-cache-directory))
+#+end_src
 
 
 #+begin_src emacs-lisp :tangle ../../core/core-load-paths.el

@@ -2,6 +2,8 @@
 #+title: Universemacs :: core :: funcs
 #+language: ja
 
+* 変数
+
 #+begin_src emacs-lisp :tangle ../../core/core-funcs.el
   (defvar configuration-layer-protected-packages)
 #+end_src
@@ -17,6 +19,15 @@
     '()
     "List of registered REPLs.")
 #+end_src
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-funcs.el
+  (defvar universemacs--init-redisplay-count
+    0
+    "The number of calls to `redisplay'")
+#+end_src
+
+* 関数
 
 
 #+begin_src emacs-lisp :tangle ../../core/core-funcs.el
@@ -52,6 +63,14 @@
 #+begin_src emacs-lisp :tangle ../../core/core-funcs.el
   (defun universemacs/window-system-is-mswindows ()
     (memq (window-system) '(w32)))
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-funcs.el
+  (defun universemacs//redisplay ()
+    "`redisplay' wrapper"
+    (setq universemacs--init-redisplay-count (1+ universemacs--init-redisplay-count))
+    (redisplay))
 #+end_src
 
 

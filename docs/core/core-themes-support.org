@@ -94,7 +94,7 @@ Universemacs ドキュメントでキーバインディングを表示するた�
 
 
 #+begin_src emacs-lisp :tangle ../../core/core-themes-support.el
-  (defun univesemacs/load-theme (theme &optional install)
+  (defun universemacs/load-theme (theme &optional install)
     "Load THEME.
   IF INSTALL is non-nil then attempt to install the theme."
     ;; Required dependenceies for some themes
@@ -157,13 +157,12 @@ Universemacs ドキュメントでキーバインディングを表示するた�
 		      "the theme \"%s\", fallback on theme \"%s\". \n"
 		      "Error was: %s")
 	      theme
-	      univesemacs--fallback-theme
+	      universemacs--fallback-theme
 	      err)
-	     (univesemacs-buffer/warning
-	      (concat "Please check the value of \"dotuniversemacs-themes\" in your "
-		      "dotfile or open an issue \n"
-		      "so we can add support for hte theme \"%s\".")
-	      theme)
+	     (universemacs-buffer/warning (concat "Please check the value of \"dotuniversemacs-themes\" in your "
+						  "dotfile or open an issue \n"
+						  "so we can add support for hte theme \"%s\".")
+					  theme)
 	     (unless (display-graphic-p)
 	       (eval `(universemacs|do-after-display-system-init
 		       (load-theme 'universemacs--fallback-theme t))))))
