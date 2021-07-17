@@ -249,7 +249,7 @@
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
   (defvar dotuniversemacs-default-font
-    '("Ricty"
+    '("HackGen"
       :size 10
       :weight normal
       :width normal
