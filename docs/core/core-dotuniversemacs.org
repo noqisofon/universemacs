@@ -249,8 +249,8 @@
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
   (defvar dotuniversemacs-default-font
-    '("HackGen"
-      :size 10
+    '("HackGenNerd"
+      :size 13
       :weight normal
       :width normal
       :powerline-scale 1.1)

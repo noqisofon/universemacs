@@ -42,8 +42,6 @@
 	    (universemacs-buffer/message "Setting font \"%s\" ..." font)
 	    (set-frame-font fontspec nil t)
 	    (push `(font . ,(frame-parameter nil 'font)) default-frame-alist)
-	    (setq-default powerline-scale scale)
-	    (setq-default powerline-height (universemacs/compute-powerline-height))
 	    ;; fallback font for unicode characters used in univesemacs
 	    (pcase system-type
 	      (`gnu/linux
@@ -77,16 +75,16 @@
 					    fallback-props)))
 		;; window numbers
 		(set-fontset-font "fontset-default"
-				  '(#x2776 #x2793) fallback-spec nil 'prepend)
+				  '(#x2776 . #x2793) fallback-spec nil 'prepend)
 		;; mode-line circled letters
 		(set-fontset-font "fontset-default"
-				  '(#x24b6 #x24fe) fallback-spec nil 'prepend)
+				  '(#x24b6 . #x24fe) fallback-spec nil 'prepend)
 		;; mode-line additional characters
 		(set-fontset-font "fontset-default"
-				  '(#x2295 #x22a1) fallback-spec nil 'prepend)
+				  '(#x2295 . #x22a1) fallback-spec nil 'prepend)
 		;; new version lighter
 		(set-fontset-font "fontset-default"
-				  '(#x2190 #x2200) fallback-spec nil 'prepend))))
+				  '(#x2190 . #x2200) fallback-spec nil 'prepend))))
 	  (throw 'break t)))
       nil))
 #+end_src

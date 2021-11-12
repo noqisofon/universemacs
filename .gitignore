@@ -67,3 +67,4 @@ session.*
 # Gasket directory
 #
 .gasket/
+/network-security.data
