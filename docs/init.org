@@ -20,16 +20,17 @@
 #+begin_src emacs-lisp :tangle ../init.el
   (if (not (version<= universemacs-require-min-version emacs-version))
       (error (concat "Your version of Emacs (%s) is too old. "
-                     "Universemacs requires Emacs version %s or above.")
-             emacs-version
-             universemacs-require-min-version)
+		     "Universemacs requires Emacs version %s or above.")
+	     emacs-version
+	     universemacs-require-min-version)
     ;; else
     (load-file (concat (file-name-directory load-file-name)
-                       "core/core-load-paths.el"))
+		       "core/core-load-paths.el"))
 
     (require 'core-universemacs)
     (universemacs/init)
-    (universemacs/configuration/sync)
+    (configuration-layer/stable-elpa-init)
+    (configuration-layer/load)
 
     (require 'server)
     (unless (server-running-p)

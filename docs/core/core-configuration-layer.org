@@ -66,6 +66,12 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defvar configuration-layer-stable-elpa-name
+    "elpa"
+    "Name of the stable ELPA repository. Should be defined in the lock file.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
   (defun configuration-layer/elpa-directory (root)
     "Evaluate the correct package subdirectory of ROOT. This is
   done according to the value of `dotuniversemacs-elpa-subdirectory'.
@@ -219,6 +225,13 @@
     "List of ELPA archives reruired by Universemacs.")
 #+end_src
 
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defvar configuration-layer-elpa-archives
+    nil
+    "List of ELPA archives required by Universemacs. This value is set by the lock
+  file.")
+#+end_src
+
 * 関数とかマクロとか
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
@@ -304,6 +317,78 @@
 			   "http://")
 			 archive-path)))))
      archives))
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defun configuration-layer//stable-elpa-download-tarball ()
+    "Download the tarball of the stable ELPA repository if it used.
+
+  Returns non nil if the tarball has been downloaded.
+
+  Returns nil if the tarball does not need to be downloaded or if an error
+  happened during the download."
+    (let (result)
+      (when (and (assoc configuration-layer-stable-elpa-name
+			configuration-layer-elpa-archives)
+		 (not (string-equal (configuration-layer/stable-elpa-version)
+				    configuration-layer-stable-elpa-version)))
+	(let ((url            (configuration-layer//stable-elpa-tarball-distant-file))
+	      (local           (configuration-layer//stable-elpa-tarball-local-file))
+	      (url-signature   (configuration-layer//stable-elpa-tarball-distant-sign-file))
+	      (local-signature (configuration-layer//stable-elpa-tarball-local-sign-file)))
+	  (universemacs-buffer/set-mode-line
+	   (format (concat "Downloading stable ELPA repository: %s ... "
+			   "(please wait)")
+		   configuration-layer-stable-elpa-name) t)
+	  ;; download tarball and detached signature
+	  (make-directory configuration-layer-stable-elpa-directory t)
+	  (condition-case-unless-debug err
+	      (progn
+		(url-copy-file url local 'ok-if-already-exists)
+		(when dotuniversemacs-verify-universelpa-archives
+		  (url-copy-file url-sig local-sig 'ok-if-already-exists))
+		(setq result t))
+	   (error nil))))
+      result))
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defun configuration-layer/stable-elpa-init ()
+    "Initialize the stable ELPA repository.
+
+  This function downloads the repository tarball. Then it verifies its signature
+  if required. The last step is to uncompress the tarball and clean the temporary
+  files."
+    (unwind-protect
+	(if (and (configuration-layer//stable-elpa-download-tarball)
+		 (or (not dotuniversemacs-verify-universelpa-archives)
+		     (configuration-layer//stable-elpa-verify-archive)))
+	    (progn
+	      (configuration-layer//stable-elpa-untar-archive)
+	      (configuration-layer//stable-elpa-update-version-file))
+	  (configuration-layer//stable-elpa-disable-repository))
+      (configuration-layer//stable-elpa-delete-temporary-files)))
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defun configuration-layer/message (message &reas args)
+    "Display MESSAGE in *Messages* prepended with '(Universemacs)'.
+  ARGS: format string arguments"
+    (message "(Universemacs) %s" (apply 'format message args)))
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defun configuration-layer/load-file (file &optional noerror)
+    "Load file silently except if debug mode."
+    (load file noerror (not init-file-debug)))
 #+end_src
 
 
