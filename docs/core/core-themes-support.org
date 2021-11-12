@@ -14,6 +14,7 @@
 #+end_src
 
 ~universemacs--fallback-them~ は指定されたユーザーテーマが何らかの理由で適用できなかった際に適用されるフォールバックテーマを表します。
+今のところ、 ~universemacs-dark~ が用意できていないので Emacs バンドルされている ~dichromacy~ を使います。
 
 #+begin_src emacs-lisp :tangle ../../core/core-themes-support.el
   (defvar universemacs--fallback-theme
@@ -75,7 +76,7 @@ Universemacs ドキュメントでキーバインディングを表示するた�
     "Hook run after theme has changed.")
 #+end_src
 
-~universemacs//get-theme-package~ は指定された THEME-NAME 名のパッケージテーマを返します。
+~universemacs//get-theme-package~ は指定された ~THEME-NAME~ 名のパッケージテーマを返します。
 
 #+begin_src emacs-lisp :tangle ../../core/core-themes-support.el
   (defun universemacs//get-theme-package (theme-name)

@@ -176,9 +176,8 @@
         (setq-default universemacs-version-check-light "[⇪]"))
     ;; install the dotfile if required
     (dotuniversemacs/maybe-install-dotfile)
-    ;; install user default theme if required
-    (when universemacs--default-user-theme
-      (universemacs/load-theme universemacs--default-user-theme 'install)))
+
+    )
 #+end_src
 
 
