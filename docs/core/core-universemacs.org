@@ -101,13 +101,13 @@
 
     (require 'core-configuration-layer)
 
-    (dotuniversemacs|call-func dotspacemacs/init "Calling dotfile init...")
+    (dotuniversemacs|call-func dotuniversemacs/init "Calling dotfile init...")
     (when dotuniversemacs-maximized-at-startup
       (unless (frame-parameter nil 'fullscreen)
         (toggle-frame-maximized))
       (add-to-list 'default-frame-alist '(fullscreen . miximized)))
 
-    (dotuniversemacs|call-func dotspacemacs/user-init "Calling dotfile user init...")
+    (dotuniversemacs|call-func dotuniversemacs/user-init "Calling dotfile user init...")
     (setq dotuniversemacs-editing-style
           (dotuniversemacs//read-editing-style-config dotuniversemacs-editing-style))
 
