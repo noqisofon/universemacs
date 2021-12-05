@@ -1,6 +1,8 @@
 # -*- coding: utf-8; -*-
 
-el_files := $(wildcard ../../core/*.el)
+org_files := $(wildcard ./*.org)
+
+el_files  := $(addsuffix .el, $(addprefix ../../core/, $(basename $(notdir $(org_files)))))
 
 all: tangle
 .PHONY: all
@@ -14,6 +16,7 @@ tangle: $(el_files)
 ../../core/core-debug.el: ./core-debug.org
 ../../core/core-display-init.el: ./core-display-init.org
 ../../core/core-dotuniversemacs.el: ./core-dotuniversemacs.org
+../../core/core-dumpers.el: ./core-dumper.org
 ../../core/core-fonts-support.el: ./core-fonts-support.org
 ../../core/core-funcs.el: ./core-funcs.org
 ../../core/core-jump.el: ./core-jump.org
