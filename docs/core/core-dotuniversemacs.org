@@ -188,7 +188,7 @@
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
   (defvar dotuniversemacs-scratch-mode
-    'text-mode
+    'lisp-interaction-mode
     "Default major mode of the scratch buffer.")
 #+end_src
 
@@ -542,6 +542,14 @@
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
   ;; only for backward compatibility
   (defalias 'dotuniversemacs-mode 'emacs-lisp-mode)
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defconst dotuniversemacs-enable-emacs-pdumper
+    nil
+    "If non-nil then enable support for the portable dumper. You'll need
+  to compile Emacs 27 from source following the instructions in file
+  EXPRERIMENTAL.org at the root of the git repository.")
 #+end_src
 
 * 関数、あるいはマクロ

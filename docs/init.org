@@ -1,6 +1,11 @@
 #+title: Universemacs :: init
 #+language: ja
 
+
+#+begin_src emacs-lisp :tangle ../init.el
+  (defconst emacs-start-time (current-time))
+#+end_src
+
 ~gc-cons-threshold~ はガベージコレクトが発動する上限のメモリ使用量を表します。
 デフォルトは 800000 ですが、それよりずっと多い数にします。
 
@@ -20,12 +25,14 @@
 #+begin_src emacs-lisp :tangle ../init.el
   (if (not (version<= universemacs-require-min-version emacs-version))
       (error (concat "Your version of Emacs (%s) is too old. "
-		     "Universemacs requires Emacs version %s or above.")
-	     emacs-version
-	     universemacs-require-min-version)
+                     "Universemacs requires Emacs version %s or above.")
+             emacs-version
+             universemacs-require-min-version)
     ;; else
     (load-file (concat (file-name-directory load-file-name)
-		       "core/core-load-paths.el"))
+                       "core/core-load-paths.el"))
+    (load-file (concat (file-name-directory load-file-name)
+                       "core/core-dumper.el"))
 
     (require 'core-universemacs)
     (universemacs/init)
@@ -37,10 +44,10 @@
     (when (and dotunivesemacs-enable-server (not (universemacs-is-dumping-p)))
       (require 'server)
       (when dotuniversemacs-server-socket-dir
-	(setq server-socket-dir dotuniversemacs-server-socket-dir))
+        (setq server-socket-dir dotuniversemacs-server-socket-dir))
       (unless (server-running-p)
-	(message "Starting a server ...")
-	(server-start))))
+        (message "Starting a server ...")
+        (server-start))))
 #+end_src
 
 ~universemacs-core~ を ~require~ し、初期化したりします。
