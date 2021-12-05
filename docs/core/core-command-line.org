@@ -2,6 +2,8 @@
 #+title: Universemacs :: core :: command-line
 #+language: ja
 
+* 変数の定義
+
 #+begin_src emacs-lisp :tangle ../../core/core-command-line.el
   (defvar universemacs-force-resume-layouts
     nil
@@ -14,6 +16,21 @@
     nil
     "If non-nil force Universemacs to operate without secured protocols.")
 #+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-command-line.el
+  (defvar universemacs-sync-packages
+    t
+    "If non-nil packages are synchronized when the configuration layer system is
+  loaded.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-command-line.el
+  (defvar universemacs-force-dump
+    nil
+    "If non-nil then force a redump of Emacs.")
+#+end_src
+
+* 関数の定義
 
 #+begin_src emacs-lisp :tangle ../../core/core-command-line.el
   (defun universemacs//parse-command-line (args)
