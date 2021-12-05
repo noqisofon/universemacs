@@ -1,0 +1,25 @@
+# -*- coding: utf-8; -*-
+#+title: Universemacs :: core :: dumper
+#+language: ja
+
+* パッケージの読み込み
+
+#+begin_src emacs-lisp :tangle ../../core/core-dumper.el
+  (require 'spinner)
+#+end_src
+
+* 予め宣言しておきたい変数・定数
+
+#+begin_src emacs-lisp :tangle ../../core/core-dumper.el
+  (defvar universemacs-dump-mode
+    'not-dumped
+    "Universemacs dump mode, can be `not-dumped`, `dumped`, `dumping`")
+#+end_src
+
+* 関数やマクロの宣言
+
+#+begin_src emacs-lisp :tangle ../../core/core-dumper.el
+  (defun universemacs-is-dumping-p ()
+    "Return non-nil if Universemacs is dumping."
+    (eq 'dumping universemacs-dump-mode))
+#+end_src
