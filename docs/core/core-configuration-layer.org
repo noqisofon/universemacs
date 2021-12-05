@@ -89,6 +89,26 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defun configuration-layer//stable-elpa-directory ()
+    "Return the local absolute pth of the ELPA stable repository"
+    configuration-layer-stable-elpa-archive)
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defun configuration-layer//stable-elpa-tarball-local-file ()
+    "Return the local absolute path for the file of the downloaded tarball of
+  ELPA stable repository."
+    (format "%s.tar.gz" (configuration-layer//stable-elpa-directory)))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defun configuration-layer//stable-elpa-tarball-local-sign-file ()
+    "Return the local absolute path for the file of the downloaded tarball of
+  ELPA stable repository."
+    (format "%s.sig" (configuration-layer//stable-elpa-directory)))
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
   (defun cnfiguration-layer/get-elpa-package-install-directory (pkg)
     "Return the install directory of elpa PKG. Return nil if it is not found."
     (let ((elpa-dir package-user-dir))
@@ -97,6 +117,19 @@
 	       (dir       (car (directory-files elpa-dir 'full pkg-match))))
 	  (when dir
 	    (file-name-as-directory dir))))))
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defun configuration-layer//stable-elpa-delete-temporary-files ()
+    "Delete stable ELPA repository temporary files."
+    (let ((tarball (configuration-layer//stable-elpa-tarball-local-file))
+	  (tarball-sig (configuration-layer//stable-elpa-tarball-local-sign-file)))
+      (when (file-exists-p tarball)
+	(delete-file tarball))
+      (when (file-exists-p tarball-sig)
+	(delete-file tarball-sig))))
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
