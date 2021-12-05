@@ -20,6 +20,8 @@
   (require 'core-universemacs-buffer)
 #+end_src
 
+* 変数の定義
+
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
   (defvar configuration-layer--refresh-package-timeout
@@ -28,9 +30,42 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defvar configuration-layer--last-dotuniversemacs-configuration-layers-file
+   (concat universemacs-cache-directory "last-configuration-layers"))
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defvar configuration-layer-stable-elpa-name
+    "elpa"
+    "Name of the stable ELPA repository. Should be defined in the lock file.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defvar configuration-layer--protected-packages
+    nil
+    "A list of packages that will be protected from removal as oroahns.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defvar configuration-layer-rollback-directory
+    (concat universemacs-cache-directory ".rollback/")
+    "Universemacs rollback directory.")
+#+end_src
+
+* 定数の定義
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
   (defconst configuration-layer-template-directory
     (expand-file-name (concat universemacs-core-directory "templates/"))
     "Universemacs contribution layers base directory.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defconst configuration-layer-stable-elpa-archive
+    nil
+    "Ansolute path to stable ELPA directory. This value is aimed to be defined in 
+  the .lock file at the root of the repository.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
@@ -43,13 +78,6 @@
   (defconst configuration-layer-private-directory
     (expand-file-name (concat universemacs-start-directory "private/"))
     "Universemacs private layers base directory.")
-#+end_src
-
-
-#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
-  (defvar configuration-layer--protected-packages
-    nil
-    "A list of packages that will be protected from removal as oroahns.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
@@ -66,10 +94,12 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
-  (defvar configuration-layer-stable-elpa-name
-    "elpa"
-    "Name of the stable ELPA repository. Should be defined in the lock file.")
+  (defconst configuration-layer-rollback-info
+    "rollback-info"
+    "Universemacs rollback information file.")
 #+end_src
+
+* 関数の定義
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
   (defun configuration-layer/elpa-directory (root)
@@ -130,18 +160,6 @@
 	(delete-file tarball))
       (when (file-exists-p tarball-sig)
 	(delete-file tarball-sig))))
-#+end_src
-
-#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
-  (defvar configuration-layer-rollback-directory
-    (concat universemacs-cache-directory ".rollback/")
-    "Universemacs rollback directory.")
-#+end_src
-
-#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
-  (defconst configuration-layer-rollback-info
-    "rollback-info"
-    "Universemacs rollback information file.")
 #+end_src
 
 * cfgl-layer クラス定義
@@ -306,6 +324,62 @@
     )
 #+end_src
 
+~configuration-layer/load~ は必要に応じて dotfile で宣言されたレイヤーをロードします。
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defun configuration-layer/load ()
+    "Load layers declared in dotfile if necessary."
+    (run-hooks 'configuration-layer-pre-load-hook)
+    (setq changed-since-last-dump-p nil)
+    ;; Check if layer list has changed since last dump
+    (when (file-exists-p
+	   configuration-layer--last-dotuniversemacs-configuration-layers-file)
+      (configuration-layer/load-file
+       configuration-layer--last-dotuniversemacs-configuration-layers-file))
+    (let ((layers dotuniversemacs-configuration-layers))
+      ;; `dotuniversemacs--configuration-layers-saved` is used to detect if the layer
+      ;; list has been changed outside of function `dotuniversemacs/layers`
+      (setq dotuniversemacs--configuration-layers-saved
+	    dotuniversemacs-configuration-layers)
+      (setq changed-since-last-dump-p
+	    (not (equal layers dotuniversemacs-configuration-layers))))
+    (cond
+     (changed-since-last-dump-p
+      ;; dump
+      (configuration-layer//load)
+      (when (universemacs/emacs-with-pdumper-set-p)
+	(configuration-layer/message "Layer list has changed since last dump.")
+	(configuration-layer//dump-emacs)))
+
+     (universemacs-force-dump
+      ;; force dump
+      (configuration-layer//load)
+      (when (universemacs/emacs-with-pdumper-set-p)
+	(configuration-layer/message
+	 (concat "--force-dump passed on the command line or configuration has "
+		 "been reloaded, forcing a redump."))
+	(configuration-layer//dump-emacs)))
+
+     ((universemacs-is-dumping-p)
+      ;; dumping
+      (configuration-layer//load))
+
+     ((and (universemacs/emacs-with-pdumper-set-p)
+	   (universemacs-run-from-dump-p))
+      ;; dumped
+      (configuration-layer/message
+       "Running from a dumped file. Skipping the loading process!"))
+
+     (t
+      ;; standard loading
+      (configuration-layer//load)
+      (when (universemacs/emacs-with-pdumper-set-p)
+	(configuration-layer/message
+	 (concat "Layer list has not changed since last time."
+		 "Skipping dumping process!")))))
+    (run-hooks 'configuration-layer-post-load-hook))
+#+end_src
+
 
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
@@ -385,6 +459,21 @@
 		(setq result t))
 	   (error nil))))
       result))
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defun configuration-layer//stable-elpa-disable-repository ()
+    "Remove stable ELPA repository from `package.el` archive."
+    (setq configuration-layer-elpa-archives
+	  (cl-delete configuration-layer-stable-elpa-name
+		     configuration-layer-elpa-archives
+		     :test 'equal :key 'car))
+    (setq package-archive-priorites
+	  (cl-delete configuration-layer-stable-elpa-name
+		     package-archive-priorities
+		     :test 'equal :key 'car)))
 #+end_src
 
 
