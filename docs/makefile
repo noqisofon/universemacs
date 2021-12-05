@@ -1,12 +1,14 @@
 # -*- coding: utf-8; -*-
 
-.PHONY: all
 all: tangle change-dir
+.PHONY: all
 
+tangle: ../init.el
 .PHONY: tangle
-tangle: ./init.org
-	../tools/org-babel-tangle ./init.org
 
-.PHONY: change-dir
 change-dir:
 	make -C ./core
+.PHONY: change-dir
+
+../%.el: ./%.org
+	../tools/org-babel-tangle $<
