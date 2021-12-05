@@ -31,10 +31,16 @@
     (universemacs/init)
     (configuration-layer/stable-elpa-init)
     (configuration-layer/load)
+    (universemacs-buffer/display-startup-note)
+    (universemacs/setup-startup-hook)
 
-    (require 'server)
-    (unless (server-running-p)
-      (server-start)))
+    (when (and dotunivesemacs-enable-server (not (universemacs-is-dumping-p)))
+      (require 'server)
+      (when dotuniversemacs-server-socket-dir
+	(setq server-socket-dir dotuniversemacs-server-socket-dir))
+      (unless (server-running-p)
+	(message "Starting a server ...")
+	(server-start))))
 #+end_src
 
 ~universemacs-core~ を ~require~ し、初期化したりします。

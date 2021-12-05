@@ -87,6 +87,7 @@
 #+end_src
 
 * 関数の定義
+  
 #+begin_src emacs-lisp :tangle ../../core/core-universemacs.el
   (defun universemacs/init ()
     "Perform startup initialization."
@@ -178,6 +179,52 @@
     (dotuniversemacs/maybe-install-dotfile)
 
     )
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-universemacs.el
+  (defun universemacs/setup-startup-hook ()
+    "Add post init processing.
+  Note: the hooked function is not executed when in dumed mode."
+    (add-hook
+     'emacs-startup-hook
+     (defun universemacs/startup-hook ()
+
+       (setq initial-buffer-choice (lambda () (get-buffer universemacs-buffer-name)))
+
+       ;; (winner-mode t)
+
+       (dotuniversemacs|call-func dotuniversemacs/user-config
+				  "Calling dotfile user config ...")
+       (dotuniversemacs|call-func dotuniversemacs/emacs-custom-settings
+				  "Calling dotfile Emacs custom settings ...")
+
+       (universemacs/initialize-custom-file-sync)
+       (run-hooks 'universemacs-post-user-config-hook)
+       (setq universemacs-post-user-config-hook-run t)
+       (when (fboundp dotuniversemacs-scratch-mode)
+	 (with-current-buffer "*scratch*"
+	   (funcall dotuniversemacs-scratch-mode)
+	   (run-hooks 'dotuniversemacs-scratch-mode-hook)))
+       (when universemacs--delayed-user-theme
+	 (universemacs/load-theme universemacs--delayed-user-theme
+				  universemacs--fallback-theme t))
+       (configuration-layer/display-summary emacs-start-time)
+       (universemacs-buffer//startup-hook)
+       (universemacs/check-for-new-version nil universemacs-version-check-interval)
+       (setq universemacs-initialized t)
+       (setq gc-cons-threshold (car dotuniversemacs-gc-cons)
+	     gc-cons-percentage (cadr dotuniversemacs-gc-cons))
+       (unless (version< emacs-version "27")
+	 (setq read-process-output-max dotuniversemacs-read-process-output-max))))
+
+    (let ((default-directory universemacs-start-directory))
+      (if dotuniversemacs-byte-compile
+	  (universemacs//ensure-byte-compilation universemacs--compiled-files)
+	(universemacs//remove-byte-compiled-files-in-dir universemacs-core-dorectory)))
+    ;; Check if revision has changed.
+    (universemacs//revision-check))
 #+end_src
 
 
