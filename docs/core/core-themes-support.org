@@ -13,7 +13,7 @@
     "List of emacs built-in themes")
 #+end_src
 
-~universemacs--fallback-them~ は指定されたユーザーテーマが何らかの理由で適用できなかった際に適用されるフォールバックテーマを表します。
+~universemacs--fallback-theme~ は指定されたユーザーテーマが何らかの理由で適用できなかった際に適用されるフォールバックテーマを表します。
 今のところ、 ~universemacs-dark~ が用意できていないので Emacs バンドルされている ~dichromacy~ を使います。
 
 #+begin_src emacs-lisp :tangle ../../core/core-themes-support.el
