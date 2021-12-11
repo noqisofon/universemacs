@@ -61,6 +61,13 @@
 
 
 #+begin_src emacs-lisp :tangle ../../core/core-universemacs-buffer.el
+  (defun universemacs-buffer/display-startup-note ()
+    "Decide of the startup note and display it if relevant."
+    )
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-universemacs-buffer.el
   (defun universemacs-buffer//insert-buttons ()
     "Create and insert the interactive buttons under Universemacs banner."
     (goto-char (point-max))

@@ -540,6 +540,17 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  ;; (universemacs|defc dotuniversemacs-byte-compile
+  ;; 		   nil
+  ;; 		   "If non-nil, byte-compile some of Universemacs files."
+  ;; 		   'boolean
+  ;; 		   'universemacs-dotuniversemacs-init)
+  (defvar dotuniversemacs-byte-compile
+    nil
+    "If non-nil, byte-compile some of Universemacs files.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
   ;; only for backward compatibility
   (defalias 'dotuniversemacs-mode 'emacs-lisp-mode)
 #+end_src
