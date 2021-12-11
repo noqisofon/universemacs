@@ -5,7 +5,7 @@
 * パッケージの読み込み
 
 #+begin_src emacs-lisp :tangle ../../core/core-dumper.el
-  ;; (require 'spinner)
+  (require 'spinner)
 #+end_src
 
 * 予め宣言しておきたい変数・定数
