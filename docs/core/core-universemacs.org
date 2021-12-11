@@ -222,7 +222,7 @@
     (let ((default-directory universemacs-start-directory))
       (if dotuniversemacs-byte-compile
 	  (universemacs//ensure-byte-compilation universemacs--compiled-files)
-	(universemacs//remove-byte-compiled-files-in-dir universemacs-core-dorectory)))
+	(universemacs//remove-byte-compiled-files-in-dir universemacs-core-directory)))
     ;; Check if revision has changed.
     (universemacs//revision-check))
 #+end_src

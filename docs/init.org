@@ -33,6 +33,8 @@
                        "core/core-load-paths.el"))
     (load-file (concat (file-name-directory load-file-name)
                        "core/core-dumper.el"))
+    (load-file (concat (file-name-directory load-file-name)
+                       "core/core-compilation.el"))
 
     (require 'core-universemacs)
     (universemacs/init)

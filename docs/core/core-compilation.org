@@ -1,0 +1,33 @@
+# -*- coding: utf-8; -*-
+#+title: Universemacs :: core :: compilation
+#+language: ja
+
+#+begin_src emacs-lisp :tangle ../../core/core-compilation.el
+  (require 'cl-lib)
+  (require 'subr-x)
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-compilation.el
+  (defvar universemacs--last-emacs-version
+    ""
+    "This variable is set during Emacs initialization to its version.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-compilation.el
+  (defconst universemacs--last-emacs-version-file
+    (expand-file-name (concat universemacs-cache-directory "last-emacs-version"))
+    "File that sets `universemacs--last-emacs-version' variable.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-compilation.el
+  (defconst universemacs--compiled-files
+    '())
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-compilation.el
+  (defun universemacs//remove-byte-compiled-files-in-dir (dir)
+    "Remove all .elc files in DIR directory."
+    (dolist (elc (directory-files-recursively dir "\\.elc$"))
+      (when (file-exists-p elc)
+	(delete-file elc))))
+#+end_src
