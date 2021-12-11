@@ -1,0 +1,56 @@
+# -*- coding: utf-8; -*-
+#+title: Universemacs :: core :: customization
+#+language: ja
+
+#+begin_src emacs-lisp :tangle ../../core/core-customization.el
+  (defmacro universemacs|defc (symbol standard doc type &optional group-override safe)
+    "Universemacs flavored `defcustom` for .universemacs configurations.
+  SYMBOL         is the variable name: it should not be quoted.
+  STANDARD       is an expression specifying the variables's standard value.
+  DOC            is a doc-string.
+  TYPE           should be a widget type for editing the symbol's value.
+		 See Info node `(elisp) Customization Types` for a list of
+		 base types and useful composite types.
+  GROUP-OVERRIDE should be provided if you don't want Universemacs to infer the
+		 configuration group from the currently configured layer name.
+  SAFE           should either be a function or t to be set to
+		 safe-local-variable property. When it's t, use TYPE determine
+		 the safety.
+
+  NOTE: Userinteractive function `universemacs/customization-valid-p' to test if a
+	variable has a proper type. In interactive mode it will also `message'
+	variable's symbol, value and type - so youcall this function with a
+	similar .universemacs variable and use its type as an example.
+  NOTE: Universemacs checks variables using validate.el package. Currently it
+	doesn't support: `:inline', `plist', `coding-system', 'color`, `hook',
+	`restricted-sezp' types so more general ones should be used instead.
+  NOTE: Variables defined with a group listed in
+	`univesemacs-customization-uncustomizable-groups' won't appear in
+	`universemacs' customization subgroups. Also their doc-string won't provide
+	customization  menu link when viewed via `describe-variable'."
+    (declare (indent defun) (doc-string 3) (debug (name body)))
+    `(let ((group (or ,group-override
+		      universemacs-customization--current-group
+		      'universemacs--uncustomization)))
+       (put ',symbol 'universemacs-customization--variable t)
+       (custom-declare-variable
+	',symbol
+	;; Took this from the `defcustom' implemntation.
+	,(if lexical-binding
+	     ``(funcall #',(lambda () ,standard))
+	   `',standard)
+	,(format "%s\n\nTYPE: %s\n" doc type)
+	:type ,type
+	:group group)
+       (pcase ,safe
+	 ('t (put ',symbol 'safe-local-bariable
+		  (apply-partially 'universemacs-customization//get-variable-validator
+				   ',symbol)))
+	 ((pred functionp) (put ',symbol 'safe-local-variable ,safe)))
+       (when (memq group universemacs-customization-uncustmizable-groups)
+	 ;; HACK: This will make `custom-variable-p' return nil
+	 ;; so the `describe-variable' function won't add customization
+	 ;; link. Will there be the reckoning? Will see!
+	 (put ',symbol 'standard-value nil)
+	 (put ',symbol 'custom-autoload nil))))
+#+end_src
