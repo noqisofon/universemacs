@@ -291,11 +291,11 @@
     (setq configuration-layer--refresh-package-timeout dotuniversemacs-elpa-timeout)
     (unless package--initialized
       (setq configuration-layer-rollback-directory
-	    (configuration-layer/elpa-directory configuration-layer-rollback-directory))
+            (configuration-layer/elpa-directory configuration-layer-rollback-directory))
       (setq package-user-dir
-	    (configuration-layer/elpa-directory package-user-dir))
+            (configuration-layer/elpa-directory package-user-dir))
       (setq package-archives (configuration-layer//resolve-package-archives
-			      configuration-layer--elpa-archives))
+                              configuration-layer--elpa-archives))
       ;; optimization, no need to activate all me packages so early
       (setq package-enable-at-startup nil)
       (package-initialize 'noactivate)))
