@@ -37,6 +37,7 @@
 auto-save-mode/
 eshell/
 elpa/
+eln-cache/
 private/
 tramp/
 server/

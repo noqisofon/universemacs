@@ -76,6 +76,12 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+  (defvar universemacs-revision--file
+    (expand-file-name (concat universemacs-cache-directory "universemacs-revision"))
+    "File where the last revision of `universemacs-start-directory` is saved.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-release-management.el
   (defun universemacs/switch-to-verson (&optional a-version)
     "Swtich universemacs to A-VERSION.
 
@@ -198,6 +204,14 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-release-management.el
+  (defun universemacs//revision-check ()
+    "Update saved value of the current revision asynchronously.
+  If old and new revisions are different. `universemacs-revision--changed-hook`
+  will be triggered."
+    (when (file-exists-p universemacs-revision--file)
+      (load universemacs-revision--file nil t))
+    ;(require 'async)
+    )
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-release-management.el

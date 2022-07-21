@@ -20,7 +20,7 @@
     "Name of the buffer to display dotfile test results.")
 #+end_src
 
-~dotuniversemacs-directory~ はオプションの universemacs ディレクトリへのパスを表します。
+~dotuniversemacs-directory~ はオプションの ~universemacs~ ディレクトリへのパスを表します。
 デフォルトは =~/.universemacs.d= です。
 この設定は ~UNIVERSEMACSDIR~ 環境変数を使用して上書きできます。
 これらのディレクトリがどちらも存在しない場合、この変数の値は ~nil~ になります。
@@ -249,7 +249,7 @@
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
   (defvar dotuniversemacs-default-font
-    '("HackGenNerd"
+    '("HackGen"
       :size 13
       :weight normal
       :width normal
@@ -467,6 +467,12 @@
 
   The property `:enabled-for-modes' takes priority over `:disable-for-modes' and
   restricts line-number to the specified list of major-mode.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el
+  (defvar dotunivesemacs-enable-server
+    nil
+    "If non nil, start an Emacs server if one is not already running.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-dotuniversemacs.el

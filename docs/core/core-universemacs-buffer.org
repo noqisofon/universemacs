@@ -357,7 +357,7 @@
 						  80)
 	      universemacs-buffer--last-width universemacs-buffer--window-width)
 	(with-current-buffer (get-buffer-create universemacs-buffer-name)
-	  (page-break-lines-mode)
+	  ;(page-break-lines-mode)
 	  (save-excursion
 	    (when (> (buffer-size) 0)
 	      (set 'save-line (line-number-at-pos))
