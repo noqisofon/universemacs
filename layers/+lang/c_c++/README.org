@@ -1,0 +1,29 @@
+#+title: C/C++ layer
+#+langauge: ja
+#+tags: general|layer|multi-pradigm|programming
+
+* DESCRIPTION
+
+このレイヤーは C/C++ 言語の構成を追加します。
+
+* INSTALL
+
+** LAYER
+
+   この構成レイヤーを使用するには、それを =~/.universemacs= に追加します。
+   このファイルの既存の ~dotspacemacs-configuration-layers~ リストに ~c-c++~ を追加する必要があります。
+
+* BACKENDS
+
+  サポートされているバックエンドは次のとおりです:
+
+  - ~lsp-clangd~ :: clangd LSP サーバーを使用します。
+  - ~lps-ccls~ :: ccls LSP サーバーを使用します。
+  - ~rtags~ :: [[https://github.com/Andersbakken/rtags][rtags]] を使用します。
+  - ~ycmd~ :: [[https://github.com/abingham/emacs-ycmd][emacs-ycmd]] を使用します。
+
+デフォルトのバックエンドを選択するには、レイヤー変数 ~c-c++-backend~ を設定します:
+
+#+begin_src emacs-lisp
+  (set-layer-variable c-c++-backend 'lsp-clangd :kind c-c++)
+#+end_src

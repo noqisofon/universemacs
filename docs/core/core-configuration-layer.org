@@ -48,6 +48,13 @@
 #+end_src
 
 #+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defvar configuration-layer-error-count
+    nil
+    "Non nil indicates the number of errors occurred during the
+  installation of initialization.")
+#+end_src
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
   (defvar configuration-layer-rollback-directory
     (concat universemacs-cache-directory ".rollback/")
     "Universemacs rollback directory.")
@@ -512,6 +519,17 @@
     "Display MESSAGE in *Messages* prepended with '(Universemacs)'.
   ARGS: format string arguments"
     (message "(Universemacs) %s" (apply 'format message args)))
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle ../../core/core-configuration-layer.el
+  (defun configuration-layer//increment-error-count ()
+    "Incement the error counter."
+    (if configuration-layer-error-count
+        (setq configuration-layer-error-count
+              (1+ configuration-layer-error-count))
+      (setq configuration-layer-error-count 1)))
 #+end_src
 
 
