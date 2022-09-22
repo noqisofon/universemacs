@@ -32,6 +32,14 @@
    ;; emacs 26 でついに行数表示のネイティブ実装であるところの  global-display-line-numbers-mode が追加された。
   (when (version<= "26.0.50" emacs-version)
     (global-display-line-numbers-mode))
+
+  ;; フォント
+  (set-face-attribute 'default nil
+                      :family "FirgeNerd"
+                      :height (* 10 10))
+
+  ;; テーマ
+  (load-theme 'dichromacy t)
 	     
   ;; 日本語の文字コードを設定します。
   (set-language-environment "Japanese")
