@@ -1,9 +1,0 @@
-# -*- coding: utf-8; -*-
-#+title: Universemacs :: core :: use-package-ext
-#+language: ja
-
-
-
-#+begin_src emacs-lisp :tangle ../../core/core-use-package-ext.el
-  (provide 'core-use-package-ext)
-#+end_src

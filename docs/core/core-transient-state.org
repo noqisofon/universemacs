@@ -1,9 +1,0 @@
-# -*- coding: utf-8; -*-
-#+title: Universemacs :: core :: transient-state
-#+language: ja
-
-
-
-#+begin_src emacs-lisp :tangle ../../core/core-transient-state.el
-  (provide 'core-transient-state)
-#+end_src
