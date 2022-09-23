@@ -66,7 +66,11 @@
 (use-package tr-ime
   :if (eq system-type 'windows-nt)
   :init
+  ;; 入力方法を IME に設定します。
   (setq default-input-method "W32-IME")
+  ;; IME のモードラインの表示設定です。
+  (setq-default w32-ime-mode-line-state-indicator "[--]")
+  (setq w32-ime-mode-line-state-indicator-line '("[--]" "[あ]" "[--]"))
   :config
   (tr-ime-standard-install)
   (w32-ime-initialize))
