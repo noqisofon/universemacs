@@ -23,7 +23,7 @@
    tab-width 4)
   :config
   ;; ツールバーを消去する。
-  (tool-bar-mode 0)
+  (tool-bar-mode -1)
   ;; 対になるカッコをハイライトする。
   (show-paren-mode t)
   ;; モードライン？にカラム数も表示する。
@@ -45,7 +45,7 @@
   (set-language-environment "Japanese")
   (prefer-coding-system 'utf-8)
 
-  (when (eq system-type 'windows-ny)
+  (when (eq system-type 'windows-nt)
 	(set-file-name-coding-system 'cp932)
 	(set-keyboard-coding-system 'cp932)
 	(set-terminal-coding-system 'cp932))
@@ -77,29 +77,35 @@
 
 (use-package mozc
   :if (eq system-type 'gnu/linux)
-  :bind ([hankaku-zenkaku] . toggle-input-method)
+  :bind ("[hankaku-zenkaku]" . toggle-input-method)
   :init
   (setq default-input-method "japanese-mozc"))
 
 ;; その他のメジャーモード
+(use-package cc-mode
+  :config
+  (setq tab-width 4)
+  (setq c-basic-offset tab-width)
+  (setq indent-tabs-mode nil))
+
 (use-package raku-mode
-  :mode (("\\.raku$"     . raku-mode)
-		 ("\\.rakumod$"  . raku-mode)
-		 ("\\.rakutest$" . raku-mode)
-		 ("\\.pl6$"      . raku-mode)
-		 ("\\.p6$"       . raku-mode))
+  :mode (("\\.raku\\'"     . raku-mode)
+		 ("\\.rakumod\\'"  . raku-mode)
+		 ("\\.rakutest\\'" . raku-mode)
+		 ("\\.pl6\\'"      . raku-mode)
+		 ("\\.p6\\'"       . raku-mode))
   :config
   ;; raku-mode の設定
   )
 
 (use-package markdown-mode
-  :mode (("\\.md$" . markdown-mode))
+  :mode (("\\.md\\'" . markdown-mode))
   :config
   ;; markdown-mode の設定
   )
 
 (use-package python-mode
-  :mode (("\\.py" . python-mode))
+  :mode (("\\.py\\'" . python-mode))
   :interpreter ("python" . python-mode))
 
 (use-package ruby-mode
@@ -113,10 +119,10 @@
   )
 
 (use-package web-mode
-  :mode (("\\.html?$"  . web-mode)
-		 ("\\.jsp$"    . web-mode)
-		 ("\\.gsp$"    . web-mode)
-		 ("\\.cshtml$" . web-mode))
+  :mode (("\\.html?\\'"  . web-mode)
+		 ("\\.jsp\\'"    . web-mode)
+		 ("\\.gsp\\'"    . web-mode)
+		 ("\\.cshtml\\'" . web-mode))
   :config
   ;; web-mode の設定
   )
