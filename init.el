@@ -78,9 +78,16 @@
 
 (use-package mozc
   :if (eq system-type 'gnu/linux)
-  :bind ("[hankaku-zenkaku]" . toggle-input-method)
+  ;;:bind ("[zenkaku-hankaku]" . toggle-input-method)
   :init
-  (setq default-input-method "japanese-mozc"))
+  (setq default-input-method "japanese-mozc")
+  ;; :bind だと、なぜか動かないので、:init に書いた。
+  (global-set-key (kbd "<zenkaku-hankaku>") 'toggle-input-method))
+
+(use-package mozc-popup
+  :if (featurep 'mozc)
+  :init
+  (setq mozc-candidate-style 'echo-area))
 
 ;; その他のメジャーモード
 (use-package cc-mode
