@@ -30,7 +30,7 @@
   ;; モードライン？にカラム数も表示する。
   (column-number-mode t)
 
-   ;; emacs 26 でついに行数表示のネイティブ実装であるところの  global-display-line-numbers-mode が追加された。
+  ;; emacs 26 でついに行数表示のネイティブ実装であるところの  global-display-line-numbers-mode が追加された。
   (when (version<= "26.0.50" emacs-version)
     (global-display-line-numbers-mode))
 
@@ -41,27 +41,27 @@
 
   ;; テーマ
   (load-theme 'dichromacy t)
-	     
+         
   ;; 日本語の文字コードを設定します。
   (set-language-environment "Japanese")
   (prefer-coding-system 'utf-8)
 
   (when (eq system-type 'windows-nt)
-	(set-file-name-coding-system 'cp932)
-	(set-keyboard-coding-system 'cp932)
-	(set-terminal-coding-system 'cp932))
+    (set-file-name-coding-system 'cp932)
+    (set-keyboard-coding-system 'cp932)
+    (set-terminal-coding-system 'cp932))
 
   (set-charset-priority 'ascii
-				        'japanese-jisx0208
-				        'katakana-jisx0201
-				        'iso-8859-1
-				        'cp1252
-				        'unicode)
+                        'japanese-jisx0208
+                        'katakana-jisx0201
+                        'iso-8859-1
+                        'cp1252
+                        'unicode)
 
   (set-coding-system-priority 'utf-8
-					          'euc-jp
-					          'iso-2022-jp
-					          'cp932))
+                              'euc-jp
+                              'iso-2022-jp
+                              'cp932))
 
 ;; IME の設定
 (use-package tr-ime
@@ -98,10 +98,10 @@
 
 (use-package raku-mode
   :mode (("\\.raku\\'"     . raku-mode)
-		 ("\\.rakumod\\'"  . raku-mode)
-		 ("\\.rakutest\\'" . raku-mode)
-		 ("\\.pl6\\'"      . raku-mode)
-		 ("\\.p6\\'"       . raku-mode))
+         ("\\.rakumod\\'"  . raku-mode)
+         ("\\.rakutest\\'" . raku-mode)
+         ("\\.pl6\\'"      . raku-mode)
+         ("\\.p6\\'"       . raku-mode))
   :config
   ;; raku-mode の設定
   )
@@ -118,18 +118,18 @@
 
 (use-package ruby-mode
   :interpreter (("ruby"    . ruby-mode)
-			    ("rbx"     . ruby-mode)
-			    ("jruby"   . ruby-mode)
-			    ("ruby1.9" . ruby-mode)
-			    ("ruby1.8" . ruby-mode))
+                ("rbx"     . ruby-mode)
+                ("jruby"   . ruby-mode)
+                ("ruby1.9" . ruby-mode)
+                ("ruby1.8" . ruby-mode))
   :config
   ;; ruby-mode の設定
   )
 
 (use-package web-mode
   :mode (("\\.jsp\\'"    . web-mode)
-		 ("\\.gsp\\'"    . web-mode)
-		 ("\\.cshtml\\'" . web-mode))
+         ("\\.gsp\\'"    . web-mode)
+         ("\\.cshtml\\'" . web-mode))
   :config
   ;; web-mode の設定
   (setq web-mode-attr-indent-offset nil)
