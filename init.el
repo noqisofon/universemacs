@@ -1,3 +1,4 @@
+;; -*- mode: emacs-lisp; -*-
 (eval-when-compile
   (unless (require 'use-package nil t)
     ;; use-package が存在しない場合、何もしない use-package を定義しておきます。
@@ -119,11 +120,33 @@
   )
 
 (use-package web-mode
-  :mode (("\\.html?\\'"  . web-mode)
-		 ("\\.jsp\\'"    . web-mode)
+  :mode (("\\.jsp\\'"    . web-mode)
 		 ("\\.gsp\\'"    . web-mode)
 		 ("\\.cshtml\\'" . web-mode))
   :config
   ;; web-mode の設定
+  (setq web-mode-attr-indent-offset nil)
+
+  (setq web-mode-enable-auto-closing t)
+  (setq web-mode-enable-auto-pairing t)
+
+  (setq web-mode-auto-close-style 2)
+  (setq web-mode-tag-auto-close-style 2)
+
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-css-indent-offset 4)
+  (setq web-mode-code-indent-offset 4)
+
+  (setq indent-tabs-mode nil)
+  (setq tab-width 2))
+
+(use-package typescript-mode
+  :mode (("\\.ts\\'"  . typescript-mode))
+  :init
+  (setq typescript-indent-level 4))
+
+(use-package rjsx-mode
+  :mode (("\\.jsx\\'" . rjsx-mode)
+         ("\\.tsx\\'" . rjsx-mode))
   )
 
