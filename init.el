@@ -1,4 +1,8 @@
 ;; -*- mode: emacs-lisp; -*-
+(defmacro when-require (feature &rest body)
+  `(when (require (quote ,feature) nil t)
+     ,@body))
+
 (eval-when-compile
   (unless (require 'use-package nil t)
     ;; use-package が存在しない場合、何もしない use-package を定義しておきます。
@@ -67,11 +71,11 @@
                               'iso-2022-jp
                               'cp932))
 
-(use-package server
-  :config
-  (unless (server-running-p)
-    ;; さーばー担当の Emacs が動いてなかったらさーばーを始める。
-    (server-start)))
+;; server は emacs にバンドルされているもののため、when-require にする。
+(when-require server
+              (unless (server-running-p)
+                ;; さーばー担当の Emacs が動いてなかったらさーばーを始める。
+                (server-start)))
 
 ;; IME の設定
 (use-package tr-ime
