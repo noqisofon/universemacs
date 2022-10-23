@@ -4,6 +4,8 @@
     ;; use-package が存在しない場合、何もしない use-package を定義しておきます。
     (defmacro use-package (&rest args))))
 
+(cd "~/")
+
 ;; カスタム内容が書き込まれるファイルを custom.el にしておきます。
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 ;; custom.el が存在した場合にそれをロードします。
@@ -29,6 +31,8 @@
   (show-paren-mode t)
   ;; モードライン？にカラム数も表示する。
   (column-number-mode t)
+  ;; セレクションに上書きします。
+  (delete-selection-mode t)
 
   ;; emacs 26 でついに行数表示のネイティブ実装であるところの  global-display-line-numbers-mode が追加された。
   (when (version<= "26.0.50" emacs-version)
@@ -63,6 +67,12 @@
                               'iso-2022-jp
                               'cp932))
 
+(use-package server
+  :config
+  (unless (server-running-p)
+    ;; さーばー担当の Emacs が動いてなかったらさーばーを始める。
+    (server-start)))
+
 ;; IME の設定
 (use-package tr-ime
   :if (eq system-type 'windows-nt)
@@ -85,38 +95,48 @@
   (global-set-key (kbd "<zenkaku-hankaku>") 'toggle-input-method))
 
 (use-package mozc-popup
+  :defer t
   :if (featurep 'mozc)
   :init
   (setq mozc-candidate-style 'echo-area))
 
 ;; その他のメジャーモード
 (use-package cc-mode
+  :defer t
   :config
   (setq tab-width 4)
   (setq c-basic-offset tab-width)
   (setq indent-tabs-mode nil))
 
 (use-package raku-mode
+  :ensure t
+  :defer t
   :mode (("\\.raku\\'"     . raku-mode)
          ("\\.rakumod\\'"  . raku-mode)
          ("\\.rakutest\\'" . raku-mode)
          ("\\.pl6\\'"      . raku-mode)
          ("\\.p6\\'"       . raku-mode))
   :config
-  ;; raku-mode の設定
+  ;; .rakumod や .raku を作成すると、スケルトンを挿入します。
+  (define-auto-insert '("\\.rakumod\\'" . "Raku module skelton") 'raku-module-skelton)
+  (define-auto-insert '("\\.raku\\'"    . "Raku module skelton") 'raku-script-skelton)
   )
 
 (use-package markdown-mode
+  :ensure t
+  :defer t
   :mode (("\\.md\\'" . markdown-mode))
   :config
   ;; markdown-mode の設定
   )
 
 (use-package python-mode
+  :defer t
   :mode (("\\.py\\'" . python-mode))
   :interpreter ("python" . python-mode))
 
 (use-package ruby-mode
+  :defer t
   :interpreter (("ruby"    . ruby-mode)
                 ("rbx"     . ruby-mode)
                 ("jruby"   . ruby-mode)
@@ -127,6 +147,8 @@
   )
 
 (use-package web-mode
+  :ensure t
+  :defer t
   :mode (("\\.jsp\\'"    . web-mode)
          ("\\.gsp\\'"    . web-mode)
          ("\\.cshtml\\'" . web-mode))
@@ -148,11 +170,15 @@
   (setq tab-width 2))
 
 (use-package typescript-mode
+  :ensure t
+  :defer t
   :mode (("\\.ts\\'"  . typescript-mode))
   :init
   (setq typescript-indent-level 4))
 
 (use-package rjsx-mode
+  :ensure t
+  :defer t
   :mode (("\\.jsx\\'" . rjsx-mode)
          ("\\.tsx\\'" . rjsx-mode))
   )
