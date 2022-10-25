@@ -187,3 +187,28 @@
          ("\\.tsx\\'" . rjsx-mode))
   )
 
+(use-package tree-sitter
+  :ensure t
+  :defer t)
+
+(use-package tree-sitter-langs
+  :ensure t
+  :defer t)
+
+(use-package tree-sitter-indent
+  :ensure t
+  :defer t)
+
+(use-package csharp-mode
+  :ensure t
+  :defer t
+  :mode (("\\.cs\\'" . csharp-mode))
+  :config
+  (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-tree-sitter-mode)))
+
+(use-package geiser-guile
+  :ensure t
+  :defer t
+  :init
+  (setq geiser-active-implementations '(guile gauche))
+  )
