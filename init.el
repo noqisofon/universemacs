@@ -93,6 +93,7 @@
 (use-package mozc
   :if (eq system-type 'gnu/linux)
   ;;:bind ("[zenkaku-hankaku]" . toggle-input-method)
+  :requires mozc-popup
   :init
   (setq default-input-method "japanese-mozc")
   ;; :bind だと、なぜか動かないので、:init に書いた。
@@ -108,7 +109,6 @@
 (use-package cc-mode
   :defer t
   :config
-  (setq tab-width 4)
   (setq c-basic-offset tab-width)
   (setq indent-tabs-mode nil))
 
@@ -170,8 +170,7 @@
   (setq web-mode-css-indent-offset 4)
   (setq web-mode-code-indent-offset 4)
 
-  (setq indent-tabs-mode nil)
-  (setq tab-width 2))
+  (setq indent-tabs-mode nil))
 
 (use-package typescript-mode
   :ensure t
@@ -202,13 +201,31 @@
 (use-package csharp-mode
   :ensure t
   :defer t
+  :requires (tree-sitter tree-sitter-langs tree-sitter-indent)
   :mode (("\\.cs\\'" . csharp-mode))
   :config
   (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-tree-sitter-mode)))
+
+(use-package scheme-mode
+  :defer t
+  :requires (geiser-guile quack)
+  :mode ("\\.scm\\'" . scheme-mode)
+  :init
+  (setq scheme-program-name "guile")
+  :config
+  (defun scheme-mode-quack-hook ()
+    ; (require 'quack)
+    (setq quack-fontify-style 'emacs))
+  (add-hook 'scheme-mode-hook 'scheme-mode-quack-hook))
 
 (use-package geiser-guile
   :ensure t
   :defer t
   :init
   (setq geiser-active-implementations '(guile gauche))
+  (setq geiser-guile-binary "guile")
   )
+
+(use-package quack
+  :ensure t
+  :defer t)
