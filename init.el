@@ -137,7 +137,9 @@
 (use-package python-mode
   :defer t
   :mode (("\\.py\\'" . python-mode))
-  :interpreter ("python" . python-mode))
+  :interpreter ("python" . python-mode)
+  :init
+  (setq python-indent-offset tab-width))
 
 (use-package ruby-mode
   :defer t
