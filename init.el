@@ -231,3 +231,19 @@
 (use-package quack
   :ensure t
   :defer t)
+
+(use-package purescript-mode
+  :ensure t
+  :defer t
+  :config
+  (add-hook 'purescript-mode-hook 'turn-on-purescript-indent))
+
+(use-package groovy-mode
+  :ensure t
+  :defer t
+  :mode (("\\.gy\\'"     . groovy-mode)
+         ("\\.gsh\\'"    . groovy-mode)
+         ("\\.gvy\\'"    . groovy-mode)
+         ("\\.groovy\\'" . groovy-mode)
+         ("\\.gradle\\'" . groovy-mode))
+   )
