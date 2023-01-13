@@ -91,15 +91,17 @@
   (w32-ime-initialize))
 
 (use-package mozc
+  :ensure t
   :if (eq system-type 'gnu/linux)
   ;;:bind ("[zenkaku-hankaku]" . toggle-input-method)
-  :requires mozc-popup
-  :init
+  :config
   (setq default-input-method "japanese-mozc")
   ;; :bind だと、なぜか動かないので、:init に書いた。
-  (global-set-key (kbd "<zenkaku-hankaku>") 'toggle-input-method))
+  (global-set-key (kbd "<zenkaku-hankaku>") 'toggle-input-method)
+  )
 
 (use-package mozc-popup
+  :ensure t
   :defer t
   :if (featurep 'mozc)
   :init
