@@ -37,6 +37,8 @@
   (column-number-mode t)
   ;; セレクションに上書きします。
   (delete-selection-mode t)
+  ;; オートリバートモードを有効にします。
+  (global-auto-revert-mode)
 
   ;; emacs 26 でついに行数表示のネイティブ実装であるところの  global-display-line-numbers-mode が追加された。
   (when (version<= "26.0.50" emacs-version)
@@ -111,6 +113,7 @@
 (use-package cc-mode
   :defer t
   :config
+  (setq tab-width 4)
   (setq c-basic-offset tab-width)
   (setq indent-tabs-mode nil))
 
@@ -159,7 +162,8 @@
   :defer t
   :mode (("\\.jsp\\'"    . web-mode)
          ("\\.gsp\\'"    . web-mode)
-         ("\\.cshtml\\'" . web-mode))
+         ("\\.cshtml\\'" . web-mode)
+         ("\\.razor\\'"  . web-mode))
   :config
   ;; web-mode の設定
   (setq web-mode-attr-indent-offset nil)
