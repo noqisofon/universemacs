@@ -21,6 +21,18 @@
                         `(,@package-archives
                           ("melpa" . "https://melpa.org/packages/")))
 
+;; さーばーファイルの名前を server-<emacs の PID> とする。
+(setq server-name (file-name-with-extension (make-temp-name "server-") ".socket"))
+;; server は emacs にバンドルされているもののため、when-require にする。
+(when-require server
+              (let ((got (server-running-p)))
+                (cond ((eq got :other)
+                       ;; :other が返ってくることもあるため、その場合は server-start を行う。
+                       (server-start))
+                      ((not got)
+                       ;; さーばー担当の Emacs が動いてなかったらさーばーを始める。
+                       (server-start)))))
+
 (use-package emacs
   :init
   (setq-default
@@ -72,12 +84,6 @@
                               'euc-jp
                               'iso-2022-jp
                               'cp932))
-
-;; server は emacs にバンドルされているもののため、when-require にする。
-(when-require server
-              (unless (server-running-p)
-                ;; さーばー担当の Emacs が動いてなかったらさーばーを始める。
-                (server-start)))
 
 ;; IME の設定
 (use-package tr-ime
@@ -174,11 +180,15 @@
   (setq web-mode-auto-close-style 2)
   (setq web-mode-tag-auto-close-style 2)
 
-  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-markup-indent-offset 4)
   (setq web-mode-css-indent-offset 4)
   (setq web-mode-code-indent-offset 4)
 
-  (setq indent-tabs-mode nil))
+  (setq indent-tabs-mode nil)
+
+  (setq web-mode-engines-alist
+        '(("php"   . "\\.phtml\\'")
+          ("blade" . "\\.blade\\'"))))
 
 (use-package typescript-mode
   :ensure t
@@ -251,5 +261,10 @@
          ("\\.gsh\\'"    . groovy-mode)
          ("\\.gvy\\'"    . groovy-mode)
          ("\\.groovy\\'" . groovy-mode)
-         ("\\.gradle\\'" . groovy-mode))
-   )
+         ("\\.gradle\\'" . groovy-mode)))
+
+(use-package fsharp-mode
+  :ensure t
+  :defer t
+  :mode (("\\.fs\\'"  . fsharp-mode)
+         ("\\.fsx\\'" . fsharp-mode)))
