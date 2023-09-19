@@ -190,6 +190,13 @@
         '(("php"   . "\\.phtml\\'")
           ("blade" . "\\.blade\\'"))))
 
+(use-package js2-mode
+  :ensure t
+  :defer t
+  :mode (("\\.js\\'" . js2-mode))
+  :init
+  (setq js-indent-level 4))
+
 (use-package typescript-mode
   :ensure t
   :defer t
@@ -229,18 +236,20 @@
   :requires (geiser-guile quack)
   :mode ("\\.scm\\'" . scheme-mode)
   :init
-  (setq scheme-program-name "guile")
+  (setq scheme-program-name "gambit")
   :config
   (defun scheme-mode-quack-hook ()
     ; (require 'quack)
     (setq quack-fontify-style 'emacs))
-  (add-hook 'scheme-mode-hook 'scheme-mode-quack-hook))
+  (add-hook 'scheme-mode-hook 'scheme-mode-quack-hook)
+  )
 
 (use-package geiser-guile
   :ensure t
   :defer t
   :init
-  (setq geiser-active-implementations '(guile gauche))
+  (setq geiser-active-implementations '(guile gauche gambit))
+  (setq geiser-scheme-implementation 'guile)
   (setq geiser-guile-binary "guile")
   )
 
