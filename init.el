@@ -51,6 +51,8 @@
   (delete-selection-mode t)
   ;; オートリバートモードを有効にします。
   (global-auto-revert-mode)
+  ;; 現在カーソルがあるとこの関数名をモードラインに表示します。
+  (which-function-mode 1)
 
   ;; emacs 26 でついに行数表示のネイティブ実装であるところの  global-display-line-numbers-mode が追加された。
   (when (version<= "26.0.50" emacs-version)
@@ -104,7 +106,7 @@
   ;;:bind ("[zenkaku-hankaku]" . toggle-input-method)
   :config
   (setq default-input-method "japanese-mozc")
-  ;; :bind だと、なぜか動かないので、:init に書いた。
+  ;; :bind だと、なぜか動かないので、:config に書いた。
   (global-set-key (kbd "<zenkaku-hankaku>") 'toggle-input-method)
   )
 
@@ -122,6 +124,17 @@
   (setq tab-width 4)
   (setq c-basic-offset tab-width)
   (setq indent-tabs-mode nil))
+
+(use-package ruby-mode
+  :defer t
+  :interpreter (("ruby"    . ruby-mode)
+                ("rbx"     . ruby-mode)
+                ("jruby"   . ruby-mode)
+                ("ruby1.9" . ruby-mode)
+                ("ruby1.8" . ruby-mode))
+  :config
+  ;; ruby-mode の設定
+  )
 
 (use-package raku-mode
   :ensure t
@@ -150,18 +163,16 @@
   :mode (("\\.py\\'" . python-mode))
   :interpreter ("python" . python-mode)
   :init
-  (setq python-indent-offset tab-width))
+  (setq python-indent-offset 4))
 
-(use-package ruby-mode
-  :defer t
-  :interpreter (("ruby"    . ruby-mode)
-                ("rbx"     . ruby-mode)
-                ("jruby"   . ruby-mode)
-                ("ruby1.9" . ruby-mode)
-                ("ruby1.8" . ruby-mode))
-  :config
-  ;; ruby-mode の設定
-  )
+
+(when-require html-mode
+              (add-hook 'html-mode-hook 'emmet-mode)
+              )
+
+(when-require mhtml-mode
+              (add-hook 'mhtml-mode-hook 'emmet-mode)
+              )
 
 (use-package web-mode
   :ensure t
@@ -211,6 +222,21 @@
          ("\\.tsx\\'" . rjsx-mode))
   )
 
+(use-package svelte-mode
+  :ensure t
+  :requires (emmet-mode)
+  :defer t
+  :mode (("\\.svelte\\'" . svelte-mode))
+  :config
+  ;; sgml-basic-offset が 2 なので、コメントアウト
+  ;;(setq svelte-basic-offset 2)
+  ;; svelte-mode 向けの hook が無いため、以下のコードは動かないｗｗｗ
+  (defun svelte-mode-my-hook ()
+    (emmet-mode))
+  (add-hook 'svelte-mode-hook 'svelte-mode-my-hook)
+  ;; ので、html-mode で emmet-mode を起動するようにする。
+  )
+
 (use-package tree-sitter
   :ensure t
   :defer t)
@@ -238,10 +264,10 @@
   :init
   (setq scheme-program-name "gambit")
   :config
-  (defun scheme-mode-quack-hook ()
+  (defun scheme-mode-my-hook ()
     ; (require 'quack)
     (setq quack-fontify-style 'emacs))
-  (add-hook 'scheme-mode-hook 'scheme-mode-quack-hook)
+  (add-hook 'scheme-mode-hook 'scheme-mode-my-hook)
   )
 
 (use-package geiser-guile
@@ -277,3 +303,14 @@
   :defer t
   :mode (("\\.fs\\'"  . fsharp-mode)
          ("\\.fsx\\'" . fsharp-mode)))
+
+(use-package scala-mode
+  :ensure t
+  :defer t
+  :mode ("\\.scala'" . scalara-mode)
+  :config
+  (add-hook 'scala-mode-hook
+            '(lambda ()
+               (setq tab-width 4)))
+  )
+  
