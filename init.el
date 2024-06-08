@@ -21,7 +21,7 @@
                         `(,@package-archives
                           ("melpa" . "https://melpa.org/packages/")))
 
-;; さーばーファイルの名前を server-<emacs の PID> とする。
+;; さーばーファイルの名前を server-<tempfile-name> とする。
 (setq server-name (file-name-with-extension (make-temp-name "server-") ".socket"))
 ;; server は emacs にバンドルされているもののため、when-require にする。
 (when-require server
@@ -163,6 +163,8 @@
   :mode (("\\.py\\'" . python-mode))
   :interpreter ("python" . python-mode)
   :init
+  (setq python-indent-guess-indent-offset nil)
+  :config
   (setq python-indent-offset 4))
 
 
@@ -307,7 +309,7 @@
 (use-package scala-mode
   :ensure t
   :defer t
-  :mode ("\\.scala'" . scalara-mode)
+  :mode ("\\.scala'" . scala-mode)
   :config
   (add-hook 'scala-mode-hook
             '(lambda ()
