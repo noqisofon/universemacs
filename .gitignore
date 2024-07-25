@@ -51,6 +51,8 @@ kkcrc
 session.*
 .org-id-locations
 
+/custom.el
+
 # ============================================================
 #  
 # Document files

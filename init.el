@@ -21,8 +21,20 @@
                         `(,@package-archives
                           ("melpa" . "https://melpa.org/packages/")))
 
-;; さーばーファイルの名前を server-<tempfile-name> とする。
-(setq server-name (file-name-with-extension (make-temp-name "server-") ".socket"))
+;; Windows のときだけさーばーファイルの名前を設定します。
+(when (eq system-type 'windows-nt)
+  ;; さーばーファイルの名前を server-<tempfile-name> とする。
+  (setq server-name (file-name-with-extension (make-temp-name "server-") ".socket")))
+
+;; `dired` を便利にします。
+(when-require dired-x)
+
+;; (when-require wdired)
+
+;; ファイル名が重複していたら、ディレクトリ名を追加します。
+(when-require uniquify
+              (set uniquify-buffer-name-style 'post-forward-angle-brackets))
+
 ;; server は emacs にバンドルされているもののため、when-require にする。
 (when-require server
               (let ((got (server-running-p)))
@@ -62,6 +74,13 @@
   (set-face-attribute 'default nil
                       :family "FirgeNerd"
                       :height (* 10 10))
+  (set-face-attribute 'fixed-pitch nil
+                      :family "FirgeNerd")
+
+  (set-face-attribute 'font-lock-constant-face nil
+                      :foreground "#d55e00"
+                      :weight 'bold
+                      :family "FirgeNerd")
 
   ;; テーマ
   (load-theme 'dichromacy t)
