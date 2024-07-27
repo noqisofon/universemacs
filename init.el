@@ -45,13 +45,34 @@
                        ;; さーばー担当の Emacs が動いてなかったらさーばーを始める。
                        (server-start)))))
 
+;;; VSCode の設定と同じ名前のメタ設定。
+;; 使用したいフォントファミリのリスト。
+(setq editor/font-family '("FirgeNerd"
+                           "HackGen"
+                           "Consolas"
+                           "Courier New"
+                           "Arial"
+                           "monospace"))
+;; フォントサイズ(ピクセル単位)を設定します。
+;; 14px であれば、11pt となる。
+(setq font-size 13)
+;; デフォルトのインデントにおけるスペースの数。
+(setq editor/tab-size 4)
+
+(defun pixel-to-point (px)
+  (pcase px
+    (`12      (*  9 10))
+    (`13      (* 10 10))
+    (`14      (* 11 10))
+    (_        (*  9 10))))
+
 (use-package emacs
   :init
   (setq-default
    ;; インデントをタブで行わない。
    indent-tabs-mode nil
    ;; タブ文字の長さは(半角スペース) 4 つ分。
-   tab-width 4)
+   tab-width editor/tab-size)
   :config
   ;; ツールバーを消去する。
   (tool-bar-mode -1)
@@ -72,15 +93,15 @@
 
   ;; フォント
   (set-face-attribute 'default nil
-                      :family "FirgeNerd"
-                      :height (* 10 10))
+                      :family (car editor/font-family)
+                      :height (pixel-to-point font-size))
   (set-face-attribute 'fixed-pitch nil
-                      :family "FirgeNerd")
+                      :family (car editor/font-family))
 
   (set-face-attribute 'font-lock-constant-face nil
                       :foreground "#d55e00"
                       :weight 'bold
-                      :family "FirgeNerd")
+                      :family (car editor/font-family))
 
   ;; テーマ
   (load-theme 'dichromacy t)
@@ -140,7 +161,7 @@
 (use-package cc-mode
   :defer t
   :config
-  (setq tab-width 4)
+  (setq tab-width editor/tab-size)
   (setq c-basic-offset tab-width)
   (setq indent-tabs-mode nil))
 
@@ -184,7 +205,7 @@
   :init
   (setq python-indent-guess-indent-offset nil)
   :config
-  (setq python-indent-offset 4))
+  (setq python-indent-offset editor/tab-size))
 
 
 (when-require html-mode
@@ -212,9 +233,9 @@
   (setq web-mode-auto-close-style 2)
   (setq web-mode-tag-auto-close-style 2)
 
-  (setq web-mode-markup-indent-offset 4)
-  (setq web-mode-css-indent-offset 4)
-  (setq web-mode-code-indent-offset 4)
+  (setq web-mode-markup-indent-offset editor/tab-size)
+  (setq web-mode-css-indent-offset editor/tab-size)
+  (setq web-mode-code-indent-offset editor/tab-size)
 
   (setq indent-tabs-mode nil)
 
@@ -227,14 +248,14 @@
   :defer t
   :mode (("\\.js\\'" . js2-mode))
   :init
-  (setq js-indent-level 4))
+  (setq js-indent-level editor/tab-size))
 
 (use-package typescript-mode
   :ensure t
   :defer t
   :mode (("\\.ts\\'"  . typescript-mode))
   :init
-  (setq typescript-indent-level 4))
+  (setq typescript-indent-level editor/tab-size))
 
 (use-package rjsx-mode
   :ensure t
@@ -331,7 +352,15 @@
   :mode ("\\.scala'" . scala-mode)
   :config
   (add-hook 'scala-mode-hook
-            '(lambda ()
-               (setq tab-width 4)))
+            (lambda ()
+               (setq tab-width editor/tab-size)))
   )
-  
+
+(defun my-run-on-exit-hook ()
+  (delete-file server-name))
+
+;; Emacs を終了する際、さーばーファイルを削除します。
+(when (eq system-type 'windows-nt)
+  ;; 普通に終了する際はさーばーファイルは削除される？
+  ;;(add-hook 'quit-window-hook 'my-run-on-exit-hook)
+  (add-hook 'kill-emacs-hook 'my-run-on-exit-hook))
